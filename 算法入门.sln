@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.2.32602.215
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "数组", "Array1\数组.csproj", "{2D8F22F5-B0FF-4A16-B099-7DD164FA03FE}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "链表", "链表\链表.csproj", "{67C7D3B6-5B8A-49B1-BA4F-6D445D83DF05}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "栈", "栈\栈.csproj", "{E8AF6608-EB63-45EA-B0E0-C76BF39FCDA5}"
@@ -32,7 +30,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "图", "图\图.csproj", "{6
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "随机化算法", "随机化算法\随机化算法.csproj", "{19E535D6-23BA-4C04-9B23-842DF7F15C92}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WordamentSolver", "WordamentSolver\WordamentSolver.csproj", "{3E027D30-2246-4F80-A2A7-B174A352C645}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WordamentSolver", "WordamentSolver\WordamentSolver.csproj", "{3E027D30-2246-4F80-A2A7-B174A352C645}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "数组", "数组\数组.csproj", "{CB737D6F-0455-47A6-8956-7FF95E17C9E4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -44,18 +44,6 @@ Global
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{2D8F22F5-B0FF-4A16-B099-7DD164FA03FE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{2D8F22F5-B0FF-4A16-B099-7DD164FA03FE}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{2D8F22F5-B0FF-4A16-B099-7DD164FA03FE}.Debug|x64.ActiveCfg = Debug|x64
-		{2D8F22F5-B0FF-4A16-B099-7DD164FA03FE}.Debug|x64.Build.0 = Debug|x64
-		{2D8F22F5-B0FF-4A16-B099-7DD164FA03FE}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{2D8F22F5-B0FF-4A16-B099-7DD164FA03FE}.Debug|x86.Build.0 = Debug|Any CPU
-		{2D8F22F5-B0FF-4A16-B099-7DD164FA03FE}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{2D8F22F5-B0FF-4A16-B099-7DD164FA03FE}.Release|Any CPU.Build.0 = Release|Any CPU
-		{2D8F22F5-B0FF-4A16-B099-7DD164FA03FE}.Release|x64.ActiveCfg = Release|x64
-		{2D8F22F5-B0FF-4A16-B099-7DD164FA03FE}.Release|x64.Build.0 = Release|x64
-		{2D8F22F5-B0FF-4A16-B099-7DD164FA03FE}.Release|x86.ActiveCfg = Release|Any CPU
-		{2D8F22F5-B0FF-4A16-B099-7DD164FA03FE}.Release|x86.Build.0 = Release|Any CPU
 		{67C7D3B6-5B8A-49B1-BA4F-6D445D83DF05}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{67C7D3B6-5B8A-49B1-BA4F-6D445D83DF05}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{67C7D3B6-5B8A-49B1-BA4F-6D445D83DF05}.Debug|x64.ActiveCfg = Debug|x64
@@ -200,6 +188,18 @@ Global
 		{3E027D30-2246-4F80-A2A7-B174A352C645}.Release|x64.Build.0 = Release|Any CPU
 		{3E027D30-2246-4F80-A2A7-B174A352C645}.Release|x86.ActiveCfg = Release|Any CPU
 		{3E027D30-2246-4F80-A2A7-B174A352C645}.Release|x86.Build.0 = Release|Any CPU
+		{CB737D6F-0455-47A6-8956-7FF95E17C9E4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CB737D6F-0455-47A6-8956-7FF95E17C9E4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CB737D6F-0455-47A6-8956-7FF95E17C9E4}.Debug|x64.ActiveCfg = Debug|x64
+		{CB737D6F-0455-47A6-8956-7FF95E17C9E4}.Debug|x64.Build.0 = Debug|x64
+		{CB737D6F-0455-47A6-8956-7FF95E17C9E4}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{CB737D6F-0455-47A6-8956-7FF95E17C9E4}.Debug|x86.Build.0 = Debug|Any CPU
+		{CB737D6F-0455-47A6-8956-7FF95E17C9E4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CB737D6F-0455-47A6-8956-7FF95E17C9E4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CB737D6F-0455-47A6-8956-7FF95E17C9E4}.Release|x64.ActiveCfg = Release|x64
+		{CB737D6F-0455-47A6-8956-7FF95E17C9E4}.Release|x64.Build.0 = Release|x64
+		{CB737D6F-0455-47A6-8956-7FF95E17C9E4}.Release|x86.ActiveCfg = Release|Any CPU
+		{CB737D6F-0455-47A6-8956-7FF95E17C9E4}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
