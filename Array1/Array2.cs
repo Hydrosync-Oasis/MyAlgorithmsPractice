@@ -4,17 +4,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace 数组
-{
+namespace 数组 {
     /// <summary>
     /// 循环数组
     /// </summary>
     /// <typeparam name="T">数组数据类型</typeparam>
-    public class Array2<T>
-    {
+    public class Array2<T> {
         T[] data;
-        public Array2(int nums)
-        {
+        public Array2(int nums) {
             data = new T[nums];
         }
 
@@ -28,10 +25,8 @@ namespace 数组
 
         public bool IsEmpty { get => N == 0; }
 
-        public void Add(T element)
-        {
-            if (N == data.Length)
-            {
+        public void Add(T element) {
+            if (N == data.Length) {
                 Largen();
             }
 
@@ -40,10 +35,8 @@ namespace 数组
             N++;
         }
 
-        public T RemoveFirst()
-        {
-            if (N == 0)
-            {
+        public T RemoveFirst() {
+            if (N == 0) {
                 throw new InvalidOperationException("数组为空");
             }
 
@@ -56,12 +49,10 @@ namespace 数组
 
         public T GetFirst() => this.data[first];
 
-        private void Largen()
-        {
+        private void Largen() {
             T[] newData = new T[data.Length * 2];
             int j = 0;
-            for (int i = 0; i < N; i++)
-            {
+            for (int i = 0; i < N; i++) {
                 newData[i] = this.data[(first + i) % data.Length];
             }
 
@@ -89,12 +80,10 @@ namespace 数组
             this.data = newData;
         }
 
-        public override string ToString()
-        {
+        public override string ToString() {
             StringBuilder sb = new();
             sb.Append(String.Format("此循环数组基本信息：Count = {0}, Capacity = {1}. 该数组成员如下：\n", N, data.Length));
-            for (int i = 0; i < N - 1; i++)
-            {
+            for (int i = 0; i < N - 1; i++) {
                 sb.Append(data[(first + i) % data.Length].ToString() + ", ");
             }
             sb.Append(data[last - 1]);

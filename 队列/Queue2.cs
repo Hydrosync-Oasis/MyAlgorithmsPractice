@@ -5,23 +5,19 @@ using System.Text;
 using System.Threading.Tasks;
 using 链表;
 
-namespace 队列
-{
+namespace 队列 {
     /// <summary>
     /// 基于链表实现的队列
     /// </summary>
     /// <typeparam name="T">队列数据类型</typeparam>
-    public class Queue2<T> : IQueue<T>
-    {
+    public class Queue2<T> : IQueue<T> {
         LinkedList1<T> data;
 
-        public Queue2()
-        {
+        public Queue2() {
             this.data = new();
         }
 
-        public Queue2(T element)
-        {
+        public Queue2(T element) {
             data = new(element);
         }
 
@@ -29,8 +25,7 @@ namespace 队列
 
         public bool IsEmpty => data.IsEmpty;
 
-        public T Dequeue()
-        {
+        public T Dequeue() {
             T first = this.data.GetFirst();
             this.data.RemoveFirst();
             return first;
@@ -38,6 +33,6 @@ namespace 队列
 
         public void Enqueue(T element) => this.data.AddLast(element);
 
-        public T Peek() => this.data.GetFirst();
+        public T PeekFront() => this.data.GetFirst();
     }
 }

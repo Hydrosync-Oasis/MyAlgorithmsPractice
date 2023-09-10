@@ -1,0 +1,141 @@
+﻿namespace 堆 {
+    public class MaxHeap<Key, Value> where Value : IComparable where Key : notnull {
+        List<Value> data;
+        int size = 0;
+        Dictionary<Key, Value> dic;
+        /// <summary>
+        /// 键和数组内部索引对应的表
+        /// </summary>
+        Dictionary<Key, int> keys;
+        Dictionary<int, Key> keys2;
+
+        public MaxHeap(int capacity) {
+            data = new List<Value>(capacity);
+            dic = new();
+            keys = new();
+            keys2 = new();
+        }
+
+        public MaxHeap() : this(16) { }
+
+        public int Count => size;
+
+        public bool IsEmpty => size == 0;
+
+        public List<Value> Values => data;
+
+        public void Add(Key key, Value item) {
+            if (size >= data.Count) {
+                data.Add(default);
+            }
+            data[size] = item;
+            AddHashMap(key, item);
+            size++;
+            Floating(key);
+        }
+
+        public Key PeekMax() {
+            if (size == 0) {
+                throw new InvalidOperationException("大顶堆是空的");
+            }
+            return data[0];
+        }
+
+        public Key PopMax() {
+            if (size == 0) {
+                throw new InvalidOperationException("大顶堆是空的");
+            } else {
+                Value tmp = data[0];//堆顶
+                size--;//减一后和最后位置的索引相同
+                Swap(0, size);
+                Key tmp2 = keys2[0];//交换后，堆顶对应的 新key
+                DeleteHashMap(size);
+                Heapify(tmp2);
+                return tmp2;
+            }
+        }
+
+        public void Remove(Key key) {
+            int removeIdx = keys[key];
+            size--;
+            Swap(removeIdx, size);
+            DeleteHashMap(size);
+            Heapify(keys2[removeIdx]);
+        }
+
+        public Value this[Key key] {
+            get => dic[key];
+            set {
+                Value val = dic[key];//原值
+                SetHashMap(keys[key], value);
+                if (val.CompareTo(value) < 0) {
+                    Floating(key);
+                } else {
+                    Heapify(key);
+                }
+            }
+        }
+
+        private void SetHashMap(int idx, Value item) {
+            Key tmp = keys2[idx];
+            dic[tmp] = item;
+            data[idx] = item;
+        }
+
+        private void Swap(int a, int b) {
+            (data[a], data[b]) = (data[b], data[a]);
+
+            (keys2[a], keys2[b]) = (keys2[b], keys2[a]);
+            Key key1 = keys2[a];
+            Key key2 = keys2[b];
+            (keys[key1], keys[key2]) = (keys[key2], keys[key1]);
+        }
+
+        /// <summary>
+        /// 只删除对应的表，不对size进行减一操作
+        /// </summary>
+        /// <param name="index">在数组中的索引</param>
+        private void DeleteHashMap(int index) {
+            Key tmp = keys2[index];
+            keys2.Remove(index);
+            keys.Remove(tmp);
+            dic.Remove(tmp);
+        }
+
+        /// <summary>
+        /// 只在对应的表上添加元素，不对size进行加一操作
+        /// </summary>
+        /// <param name="key">元素的键</param>
+        /// <param name="item">元素的值</param>
+        private void AddHashMap(Key key, Value item) {
+            keys[key] = size;
+            keys2[size] = key;
+            dic[key] = item;
+        }
+
+        private void Floating(Key key) {
+            int index = keys[key];
+            while (data[(index - 1) / 2].CompareTo(data[index]) < 0) {
+                Swap((index - 1) >> 1, index);
+                index = (index - 1) / 2;
+            }
+            keys[key] = index;
+        }
+
+        private void Heapify(Key key) {
+            int index = keys[key];
+            Value val = data[index];
+            while (((index << 1) | 1) < size) {
+                int left = (index << 1) | 1;
+                int right = left + 1;
+                int largest = (right < size && data[right].CompareTo(data[left]) > 0) ? right : left;
+                if (data[largest].CompareTo(val) <= 0) {
+                    return;//下沉完毕
+                } else {
+                    Swap(largest, index);
+                    index = largest;
+                }
+            }
+        }
+    }
+}

@@ -4,10 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace 栈
-{
-    public interface IStack<T>
-    {
+namespace 栈 {
+    public interface IStack<T> {
         void Push(T element);
 
         T Pop();

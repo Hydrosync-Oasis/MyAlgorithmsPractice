@@ -5,11 +5,15 @@
     <TargetFramework>net6.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <Platforms>AnyCPU;x64</Platforms>
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include="..\.editorconfig" Link=".editorconfig" />
+    <PackageReference Include="Microsoft.VisualStudio.VsixColorCompiler" Version="17.0.31709.430" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\堆\堆.csproj" />
+    <ProjectReference Include="..\树\树.csproj" />
   </ItemGroup>
 
 </Project>

@@ -5,23 +5,19 @@ using System.Text;
 using System.Threading.Tasks;
 using 数组;
 
-namespace 队列
-{
+namespace 队列 {
     /// <summary>
     /// 基于动态数组实现的队列，性能较慢
     /// </summary>
     /// <typeparam name="T">队列数据类型</typeparam>
-    public class Queue1<T> : IQueue<T>
-    {
+    public class Queue1<T> : IQueue<T> {
         private Array1<T> data;
 
-        public Queue1()
-        {
+        public Queue1() {
             data = new();
         }
 
-        public Queue1(T element):this()
-        {
+        public Queue1(T element) : this() {
             this.Enqueue(element);
         }
 
@@ -29,8 +25,7 @@ namespace 队列
 
         public bool IsEmpty => data.IsEmpty;
 
-        public T Dequeue()
-        {
+        public T Dequeue() {
             T first = this.data.Get(0);
             this.data.RemoveAt(0);
             return first;
@@ -38,7 +33,7 @@ namespace 队列
 
         public void Enqueue(T element) => data.Add(element);
 
-        public T Peek() => data.Get(0);
+        public T PeekFront() => data.Get(0);
 
         public override string ToString() => this.data.ToString();
     }

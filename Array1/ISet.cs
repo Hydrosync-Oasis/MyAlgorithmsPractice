@@ -4,10 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace 数组
-{
-    public interface ISet<T>
-    {
+namespace 数组 {
+    public interface ISet<T> {
         bool IsEmpty { get; }
 
         int Count { get; }
@@ -16,7 +14,7 @@ namespace 数组
 
         void Remove(T element);
 
-        bool Contais(T element); 
+        bool Contais(T element);
 
     }
 }
