@@ -103,10 +103,7 @@ namespace 树 {
 
         public void Remove(T value) {
             //分情况：无子节点、有左树、有右树和左右树均有
-            Node? cur = FindNode(value);
-            if (cur is null) {
-                throw new InvalidOperationException("不存在节点");
-            }
+            Node? cur = FindNode(value) ?? throw new InvalidOperationException("不存在节点");
             //找到了
             var parent = cur.parent;
             if (cur.leftChild is null && cur.rightChild is null) { //无子树

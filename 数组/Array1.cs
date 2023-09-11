@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.CompilerServices;
+﻿using System.Collections;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace 数组 {
-    public class Array1<Type> {
+    public class Array1<Type> : IEnumerable<Type> {
         private Type[] data;//可以填不满
         private int N = 0;//实际存储的数据数量
 
@@ -109,7 +105,7 @@ namespace 数组 {
 
         public override string ToString() {
             StringBuilder sb = new();
-            sb.Append(String.Format("本数组基本信息：Count = {0}, Capacity = {1}. 成员列表：\n", this.Count, this.Capacity));
+            sb.Append($"本数组基本信息：Count = {this.Count}, Capacity = {this.Capacity}. 成员列表：\n");
             for (int i = 0; i < N - 1; i++) {
                 sb.Append(data[i] + ", ");
             }
@@ -120,7 +116,7 @@ namespace 数组 {
         public bool Contains(Type element) {
 
             for (int i = 0; i < N; i++) {
-                if (data[i].Equals(element)) {
+                if (data[i] is not null && data[i].Equals(element)) {
                     return true;
                 }
             }
@@ -129,11 +125,48 @@ namespace 数组 {
 
         public int IndexOf(Type element) {
             for (int i = 0; i < N; i++) {
-                if (data[i].Equals(element)) {
+                if (data[i] is not null && data[i].Equals(element)) {
                     return i;
                 }
             }
             return -1;
+        }
+
+
+
+        public IEnumerator<Type> GetEnumerator() {
+            return new Enu<Type>(this);
+        }
+
+        IEnumerator IEnumerable.GetEnumerator() {
+            return GetEnumerator();
+        }
+
+
+        private class Enu<T> : IEnumerator<T> {
+            int cur = 0;
+            Array1<T> data;
+
+            public Enu(Array1<T> arr) {
+                data = arr;
+            }
+
+            public T Current => data[cur];
+
+            object IEnumerator.Current => Current;
+
+            public void Dispose() {
+                
+            }
+
+            public bool MoveNext() {
+                cur++;
+                return cur >= data.Count;
+            }
+
+            public void Reset() {
+                cur = 0;
+            }
         }
     }
 }
