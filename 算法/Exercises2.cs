@@ -286,7 +286,8 @@ namespace Algorithm {
                 }
                 if (str1[n - 1] == str2[m - 1]) {
                     LCS.Append(str1[n - 1]);
-                    m--; n--;
+                    m--;
+                    n--;
                 } else {
                     if (dpLCS[m - 1, n] >= dpLCS[m, n - 1]) {
                         m--;
@@ -310,7 +311,8 @@ namespace Algorithm {
                     }
                 }
                 res.Append(LCS[c++]);
-                c1++; c2++;
+                c1++;
+                c2++;
             }
             if (c1 < str1.Length) {
                 res.Append(str1[c1..]);
@@ -1292,7 +1294,8 @@ namespace Algorithm {
             for (int i = 0; i < graph.Length; i++) {
                 int[] item = graph[i];
                 if (item.Length == 0) {
-                    ends.Add(i); ;
+                    ends.Add(i);
+                    ;
                 }
             }
 
@@ -1956,7 +1959,8 @@ namespace Algorithm {
             }
 
             static int digit(int n) { //取在屏幕上显示的位数
-                if (n == 0) return 1;
+                if (n == 0)
+                    return 1;
                 int res = 0;
                 while (n > 0) {
                     n /= 10;
@@ -2550,7 +2554,8 @@ namespace Algorithm {
                 }
             }
             int c;
-            for (c = res.Length - 1; c >= 0 && res[c] == 0; c--) ;
+            for (c = res.Length - 1; c >= 0 && res[c] == 0; c--)
+                ;
             if (c == -1) {
                 return new int[] { 0 };
             } else {
@@ -6595,7 +6600,8 @@ namespace Algorithm {
             }
 
             int find(int n) {
-                if (fa[n] == n) return n;
+                if (fa[n] == n)
+                    return n;
                 return fa[n] = find(fa[n]);
             }
 
@@ -7244,7 +7250,8 @@ namespace Algorithm {
                     j++;
                     flag = true;
                 }
-                if (flag) j--;
+                if (flag)
+                    j--;
                 if (indices[items[j]] == i && s.IndexOf(sources[items[j]], indices[items[j]]) == indices[items[j]]) {
                     res.Append(targets[items[j]]);
                     i += sources[items[j]].Length - 1;
@@ -7902,7 +7909,7 @@ namespace Algorithm {
         public static int MinRefuelStops(int target, int startFuel, int[][] stations) {
             int reach = -1;
             // 向前推
-            PriorityQueue<int, int> que = new(new MaxHeapComparer<int>());
+            PriorityQueue<int, int> que = new(new MaxHeapComparer<int>()); // 反悔堆
             int res = 0;
             int last = 0;
             que.Enqueue(startFuel, startFuel);
@@ -7920,7 +7927,54 @@ namespace Algorithm {
                 last += tmp;
             }
             return -1;
+        }
 
+        public static int ScheduleCourse(int[][] courses) { // WA
+            PriorityQueue<int, int> que = new(); // 反悔堆
+            // 先寻找一个不太正确的贪心，再进行反悔。
+            Array.Sort(courses, (a, b) => a[1].CompareTo(b[1]));
+            int t = 0;
+            for (int i = 0; i < courses.Length; i++) {
+                int cur = courses[i][0];
+                if (t + cur > courses[i][1]) {
+                    if (que.Count > 0 && courses[que.Peek()][0] > cur) {
+                        var tmp = que.Dequeue();
+                        t -= courses[tmp][0];
+                        t += cur;
+                        que.Enqueue(i, -courses[i][0]);
+                    }
+                } else {
+                    t += cur;
+                    que.Enqueue(i, -courses[i][0]);
+                }
+            }
+            return que.Count;
+        }
+
+        public static int MagicTower(int[] nums) {
+            int n = nums.Length;
+            PriorityQueue<int, int> que = new(); // 反悔堆
+            int res = 0;
+            int sum = 0;
+            int minus = 0;
+            for (int i = 0; i < n; i++) {
+                que.Enqueue(i, nums[i]);
+                sum += nums[i];
+
+                while (que.Count > 0 && sum < 0) {
+                    var tmp = que.Dequeue();
+                    if (nums[tmp] > 0) {
+                        que.Enqueue(tmp, nums[tmp]);
+                        break;
+                    }
+                    sum -= nums[tmp];
+                    minus += nums[tmp];
+                    res++;
+                }
+                if (sum < 0) { return -1; }
+            }
+            if (minus + sum < 0) { return -1; }
+            return res;
         }
 
         class MaxHeapComparer<T> : IComparer<T> where T : IComparable<T> {

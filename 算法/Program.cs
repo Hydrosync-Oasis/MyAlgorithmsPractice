@@ -12,7 +12,7 @@ namespace Algorithm {
 
             //Test();
             var res3 =
-            Exercises.MinRefuelStops(1000, 299, [[13,21],[26,115],[100,47],[225,99],[299,141],[444,198],[608,190],[636,157],[647,255],[841,123]]);
+            Exercises.MagicTower([-1, 1, -1, -1, 1]);
             sw.Stop();
             Console.WriteLine(res3);
             //Check();
