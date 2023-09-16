@@ -3,6 +3,7 @@ using System.Data.Common;
 using System.Globalization;
 using System.Reflection;
 using System.Runtime.InteropServices.JavaScript;
+using System.Runtime.InteropServices.Marshalling;
 using System.Text;
 using 树;
 using 队列;
@@ -7976,6 +7977,162 @@ namespace Algorithm {
             if (minus + sum < 0) { return -1; }
             return res;
         }
+
+        public static int SmallestRangeII(int[] nums, int k) {
+            Array.Sort(nums);
+            int max = nums[^1] + k;
+            int min = nums[0] + k;
+            int res = max - min;
+            for (int i = nums.Length - 1; i >= 1; i--) {
+                //nums[i] -= k;
+                min = Math.Min(min, nums[i] - k);
+                max = Math.Max(nums[i - 1] + k, nums[^1] - k);
+                res = Math.Min(res, max - min);
+            }
+            return res;
+        }
+
+        public static int PreimageSizeFZF(int k) {
+            long l = 0, r = long.MaxValue - 1;
+            long x1 = -1, x2 = -1;
+            checked {
+                while (l <= r) {
+                    long m = ((r - l) >> 1) + l;
+                    long tmp = f(m);
+                    if (tmp > k) {
+                        r = m - 1;
+                    } else if (tmp < k) {
+                        l = m + 1;
+                    } else {
+                        x1 = m;
+                        r = m - 1;
+                    }
+                }
+                if (x1 == -1) {
+                    return 0;
+                }
+                l = 0;
+                r = long.MaxValue;
+                while (l <= r) {
+                    long m = ((r - l) >> 1) + l;
+                    long tmp = f(m);
+                    if (tmp > k) {
+                        r = m - 1;
+                    } else if (tmp < k) {
+                        l = m + 1;
+                    } else {
+                        x2 = m;
+                        l = m + 1;
+                    }
+                }
+                return (int)(x2 - x1 + 1);
+
+                static long f(long x) {
+                    long factor = 5;
+                    long res = 0;
+                    while (factor <= x) {
+                        res += x / factor;
+                        if (factor > x / 5) {
+                            break;
+                        }
+                        factor *= 5;
+                    }
+                    return res;
+                }
+            }
+        }
+
+        public static string ShortestSuperstring(string[] words) {
+            throw new NotImplementedException();
+
+            //int f(int bit) {
+
+            //}
+
+            int getShort(int a, int b) {
+                int res = Math.Min(words[a].Length, words[b].Length);
+                for (int i = res; i > 0; i--) { // len
+                    bool flag = true;
+                    for (int j = 0; j < res; j++) {
+                        if (words[a][words[a].Length - i + j] != words[b][j]) {
+                            flag = false;
+                            break;
+                        }
+                    }
+                    if (flag) {
+                        return i;
+                    }
+                }
+                return 0;
+            }
+        }
+
+        public static int MaximumSafenessFactor(IList<IList<int>> grid) {
+            // TTTFFF 二分答案
+            int n = grid.Count;
+            List<(int x, int y)> ones = new();
+            for (int i = 0; i < n; i++) {
+                for (int j = 0; j < n; j++) {
+                    if (grid[i][j] == 1) {
+                        ones.Add((i, j));
+                    }
+                }
+            }
+            int[][] dire = [[1, 0], [-1, 0], [0, 1], [0, -1]];
+            int l = -1, r = int.MaxValue / 10;
+            while (l < r) {
+                int m = l + ((r - l + 1) >> 1);
+                if (check(m)) {
+                    l = m;
+                } else {
+                    r = m - 1;
+                }
+            }
+            return l;
+
+            bool check(int dis) {
+                if (dis == 0) {
+                    return true;
+                }
+                if (grid[0][0] == 1 || grid[n - 1][n - 1] == 1) {
+                    return false;
+                }
+                if (calc((0, 0)) < dis) {
+                    return false;
+                }
+                bool[,] visited = new bool[n, n];
+                Queue<(int x, int y)> que = new();
+                que.Enqueue((0, 0));
+                visited[0, 0] = true;
+                while (que.Count > 0) {
+                    var tmp = que.Dequeue();
+                    if (tmp == (n - 1, n - 1)) {
+                        return true;
+                    }
+                    for (int i = 0; i < dire.Length; i++) {
+                        int x = dire[i][0] + tmp.x;
+                        int y = dire[i][1] + tmp.y;
+                        if (x >= 0 && x < n && y >= 0 && y < n && !visited[x, y]) {
+                            visited[x, y] = true;
+                            if (calc((x, y)) >= dis) { // dis是最小距离
+                                que.Enqueue((x, y));
+                            }
+                        }
+                    }
+                }
+                return false;
+            }
+
+            int calc((int x, int y) p) {
+                int res = int.MaxValue;
+                for (int i = 0; i < ones.Count; i++) {
+                    res = Math.Min(res,
+                        Math.Abs(ones[i].x - p.x) + Math.Abs(ones[i].y - p.y));
+                }
+                return res;
+            }
+        }
+
 
         class MaxHeapComparer<T> : IComparer<T> where T : IComparable<T> {
             public int Compare(T x, T y) {
