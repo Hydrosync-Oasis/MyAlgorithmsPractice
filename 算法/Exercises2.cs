@@ -8133,6 +8133,23 @@ namespace Algorithm {
             }
         }
 
+        public static int SmallestSubarrays(int[] arr) {
+            // 修改了数组的定义，在x前的每一个元素j都是arr[j..x)的按位或值
+            int n = arr.Length;
+            HashSet<int> set = new() { arr[0] };
+            for (int i = 1; i < n; i++) {
+                int x = arr[i];
+                set.Add(x);
+                for (int j = i - 1; j >= 0; j--) {
+                    if ((x | arr[j]) == arr[j]) {
+                        break;
+                    }
+                    arr[j] |= x;
+                    set.Add(arr[j]);
+                }
+            }
+            return set.Count;
+        }
 
         class MaxHeapComparer<T> : IComparer<T> where T : IComparable<T> {
             public int Compare(T x, T y) {
