@@ -3,8 +3,10 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.Design;
 using System.Data.SqlTypes;
+using System.Globalization;
 using System.Linq;
 using System.Net;
+using System.Runtime.ConstrainedExecution;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
@@ -958,6 +960,72 @@ namespace Algorithm {
         }
 
         public TreeNode Get_root() => root;
+    }
+
+    public class LockingTree {
+        int[] data;
+        int[] user;
+        List<int>[] graph;
+
+        public LockingTree(int[] parent) {
+            data = parent;
+            user = new int[data.Length];
+            graph = new List<int>[data.Length];
+            for (int i = 0; i < graph.Length; i++) {
+                graph[i] = new();
+            }
+            for (int i = 0; i < parent.Length; i++) {
+                if (parent[i] >= 0) {
+                    graph[parent[i]].Add(i);
+                }
+            }
+        }
+
+        public bool Lock(int num, int user) {
+            if (this.user[num] == 0) {
+                this.user[num] = user;
+                return true;
+            }
+            return false;
+        }
+
+        public bool Unlock(int num, int user) {
+            if (this.user[num] == user) {
+                this.user[num] = 0;
+                return true;
+            }
+            return false;
+        }
+
+        public bool Upgrade(int num, int user) {
+            int cur = num;
+            while (cur >= 0) {
+                if (this.user[cur] != 0) {
+                    return false;
+                }
+                cur = data[cur];
+            }
+            if (!Fill(num)) {
+                return false;
+            }
+            this.user[num] = user;
+            return true;
+        }
+
+        private bool Fill(int pos) {
+            if (pos >= user.Length || pos < 0) {
+                return false;
+            }
+            bool res = false;
+            if (user[pos] != 0) {
+                res = true;
+            }
+            user[pos] = 0;
+            for (int i = 0; i < graph[pos].Count; i++) {
+                res |= Fill(graph[pos][i]);
+            }
+            return res;
+        }
     }
 
 }

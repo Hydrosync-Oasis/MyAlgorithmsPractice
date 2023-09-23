@@ -12,7 +12,7 @@ namespace Algorithm {
 
             //Test();
             var res3 =
-            Exercises.SmallestSubarrays([1, 1, 2]);
+            Exercises.DistMoney(12, 3);
             sw.Stop();
             Console.WriteLine(res3);
             //Check();

@@ -2,6 +2,7 @@
 using System.Data.Common;
 using System.Globalization;
 using System.Reflection;
+using System.Reflection.Metadata.Ecma335;
 using System.Runtime.InteropServices.JavaScript;
 using System.Runtime.InteropServices.Marshalling;
 using System.Text;
@@ -8151,7 +8152,29 @@ namespace Algorithm {
             return set.Count;
         }
 
-        class MaxHeapComparer<T> : IComparer<T> where T : IComparable<T> {
+        public static int DistMoney(int money, int children) {
+            if (money < children) {
+                return -1;
+            }
+            if (money <= 8) {
+                return 0;
+            }
+            money -= children;//为每个儿童先分发一块钱
+            if (money / 7.0 > children) {
+                return children - 1;
+            } else if (money / 7 * 7 == money && money / 7 == children) {
+                return children;
+            } else {
+                if (money % 7 == 3) {
+                    if (children - money / 7 < 2) {
+                        return money / 7 - 1;
+                    }
+                }
+                return money / 7;
+            }
+        }
+
+        private class MaxHeapComparer<T> : IComparer<T> where T : IComparable<T> {
             public int Compare(T x, T y) {
                 return y.CompareTo(x);
             }
