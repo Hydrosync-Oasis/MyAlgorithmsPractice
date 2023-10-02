@@ -12,7 +12,7 @@ namespace Algorithm {
 
             //Test();
             var res3 =
-            Exercises.DistMoney(12, 3);
+            Exercises.MaximumTripletValue2([9,8,7,2,3]);
             sw.Stop();
             Console.WriteLine(res3);
             //Check();

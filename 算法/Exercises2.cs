@@ -8174,6 +8174,91 @@ namespace Algorithm {
             }
         }
 
+        public static int BestRotation(int[] nums) {
+            int n = nums.Length;
+            int[] diff = new int[n + 1];
+            for (int i = 0; i < n; i++) {
+                // [nums[i], n-1]
+                int from = (nums[i] - i + n) % n;
+                int to = (n - 1 - i) % n;
+                if (from < to) {
+                    diff[from]++;
+                    diff[to + 1]--;
+                } else {
+                    diff[from]++;
+                    diff[^1]--;
+
+                    diff[0]++;
+                    diff[to + 1]--;
+                }
+            }
+            int max = 0;
+            int res = -1;
+            int d = 0;
+            for (int i = 0; i < diff.Length; i++) {
+                d += diff[i];
+                if (d > max) {
+                    max = d;
+                    res = (n - i) % n;
+                } else if (d == max) {
+                    res = Math.Min(res, (n - i) % n);
+                }
+            }
+            return res;
+
+        }
+
+        public static int MinimizeMax(int[] nums, int p) {
+            Array.Sort(nums);
+            int min = int.MaxValue, max = int.MinValue;
+            for (int i = 0; i < nums.Length; i++) {
+                min = Math.Min(min, nums[i]);
+                max = Math.Max(max, nums[i]);
+            }
+            // 0 0 1 1 1 1
+            int l = 0, r = max - min;
+            while (l < r) {
+                int m = (l + r) >> 1;
+                if (!check(m)) {
+                    l = m + 1;
+                } else {
+                    r = m;
+                }
+            }
+            return l;
+
+            bool check(int gap) {
+                int start = 0;
+                int i = start + 1;
+                int res = 0;
+                while (i < nums.Length) {
+                    while (i < nums.Length && Math.Abs(nums[i] - nums[i - 1]) <= gap) { i++; }
+                    res += (i - start) / 2;
+                    start = i++;
+                }
+                return res >= p;
+            }
+        }
+
+        public static long MaximumTripletValue(int[] nums) {
+            int a = nums[0];
+            int b = nums[1];
+            int sub = 0;
+            int[] max = new int[nums.Length];
+            max[^1] = nums[^1];
+            for (int i = nums.Length - 2; i >= 0; i--) {
+                max[i] = Math.Max(nums[i], max[i + 1]);
+            }
+            long res = 0;
+            for (int i = 1; i < nums.Length - 1; i++) {
+                sub = a - nums[i];
+                a = Math.Max(a, nums[i]);
+                res = Math.Max(res, (long)max[i + 1] * sub);
+            }
+            return res;
+        }
+
+
         private class MaxHeapComparer<T> : IComparer<T> where T : IComparable<T> {
             public int Compare(T x, T y) {
                 return y.CompareTo(x);
