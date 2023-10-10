@@ -8348,6 +8348,24 @@ namespace Algorithm {
             }
         }
 
+        public static int SumDistance(int[] nums, string s, int d) {
+            checked {
+                const int MOD = 1000000007;
+                int n = nums.Length;
+                long[] final = new long[n];
+                for (int i = 0; i < n; i++) {
+                    final[i] = (long)nums[i] + (s[i] == 'L' ? -d : d);
+                }
+                Array.Sort(final);
+                long res = 0;
+                for (int i = 0; i < n; i++) {
+                    res = (res % MOD + MOD - (n - i - 1) * final[i]) % MOD;
+                    res = (res % MOD + i * final[i] % MOD) % MOD;
+                }
+                return (int)res;
+            }
+        }
+
 
         private class MaxHeapComparer<T> : IComparer<T> where T : IComparable<T> {
             public int Compare(T x, T y) {
