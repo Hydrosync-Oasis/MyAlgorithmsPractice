@@ -11,8 +11,7 @@ namespace Algorithm {
             Stopwatch sw = Stopwatch.StartNew();
 
             //Test();
-            var res3 =
-            Exercises.MaximumTripletValue2([9,8,7,2,3]);
+            var res3 = Exercises.RegionsBySlashes(["/\\", "\\/"]);
             sw.Stop();
             Console.WriteLine(res3);
             //Check();
@@ -88,11 +87,13 @@ namespace Algorithm {
         }
 
         static void Test() {
-            List<int> ipt = new();
-            for (int i = 100001; i >= 2; i--) {
-                ipt.Add(99991);
+            List<int> l = [];
+            Random ran = new();
+            for (int i = 0; i < 100000; i++) {
+                l.Add(ran.Next(1, 100000));
             }
-            Exercises.CanTraverseAllPairs(ipt.ToArray());
+            var res = Exercises.LongestCycle(l.ToArray());
+            Console.WriteLine(res);
         }
 
         public static int MinOperations(int[] nums1, int[] nums2) {

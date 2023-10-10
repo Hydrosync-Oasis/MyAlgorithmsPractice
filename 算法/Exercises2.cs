@@ -6,6 +6,7 @@ using System.Reflection.Metadata.Ecma335;
 using System.Runtime.InteropServices.JavaScript;
 using System.Runtime.InteropServices.Marshalling;
 using System.Text;
+using System.Xml.Linq;
 using 树;
 using 队列;
 
@@ -8242,8 +8243,6 @@ namespace Algorithm {
 
         public static long MaximumTripletValue(int[] nums) {
             int a = nums[0];
-            int b = nums[1];
-            int sub = 0;
             int[] max = new int[nums.Length];
             max[^1] = nums[^1];
             for (int i = nums.Length - 2; i >= 0; i--) {
@@ -8251,11 +8250,102 @@ namespace Algorithm {
             }
             long res = 0;
             for (int i = 1; i < nums.Length - 1; i++) {
-                sub = a - nums[i];
+                int sub = a - nums[i];
                 a = Math.Max(a, nums[i]);
                 res = Math.Max(res, (long)max[i + 1] * sub);
             }
             return res;
+        }
+
+        public static int LongestCycle(int[] edges) {
+            HashSet<int> seen = new();
+            int res = -1;
+            for (int i = 0; i < edges.Length; i++) {
+                find(i, 1, new());
+            }
+            return res;
+
+            void find(int node, int n, Dictionary<int, int> vis) {
+                if (seen.Contains(node)) {
+                    bring(vis);
+                    return;
+                }
+                if (vis.ContainsKey(node)) {
+                    res = Math.Max(res, n - vis[node]);
+                    bring(vis);
+                    return;
+                }
+                vis.Add(node, n);
+                if (edges[node] != -1) {
+                    find(edges[node], n + 1, vis);
+                } else {
+                    bring(vis);
+                }
+            }
+
+            void bring(Dictionary<int, int> vis) {
+                foreach (var v in vis) {
+                    seen.Add(v.Key);
+                }
+                //vis.Clear();
+            }
+        }
+
+        public static int RegionsBySlashes(string[] grid) {
+            int n = grid.Length;
+            int[] fa = new int[n * n << 2];
+            for (int i = 0; i < fa.Length; i++) { fa[i] = i; }
+            for (int i = 0; i < n; i++) {
+                for (int j = 0; j < n; j++) {
+                    int bas = (i * n + j) * 4;
+                    if (grid[i][j] == ' ') {
+                        union(bas, bas + 1);
+                        union(bas + 2, bas + 1);
+                        union(bas + 3, bas + 1);
+                    } else if (grid[i][j] == '/') {
+                        union(bas, bas + 3);
+                        union(bas + 1, bas + 2);
+                    } else {
+                        union(bas + 3, bas + 2);
+                        union(bas + 1, bas);
+                    }
+                    if (i != 0) {
+                        union(bas, bas - n * 4 + 2);
+                    }
+                    if (i != n - 1) {
+                        union(bas + 2, bas + n * 4);
+                    }
+                    if (j != 0) {
+                        union(bas + 3, bas - 4 + 1);
+                    }
+                    if (j != n - 1) {
+                        union(bas + 1, bas + 4 + 3);
+                    }
+                }
+            }
+            int res = 0;
+            for (int i = 0; i < fa.Length; i++) {
+                if (fa[i] == i) {
+                    res++;
+                }
+            }
+            return res;
+
+            int find(int x) {
+                if (fa[x] == x) {
+                    return x;
+                }
+                return fa[x] = find(fa[x]);
+            }
+
+            void union(int x, int y) {
+                int a = find(x);
+                int b = find(y);
+                if (a == b) {
+                    return;
+                }
+                fa[a] = b;
+            }
         }
 
 

@@ -420,21 +420,18 @@ namespace Algorithm {
         public int Next(int price) {
             data.Add(price);
             dp.Add(1);
-            if (price < data[^1]) {
-                return 1;
-            } else {
+            if (price >= data[^1]) {
                 int idx = dp.Count - 1;
-                int thsIdx = idx;
                 do {
                     idx -= dp[idx];
                     if (data[idx] <= price) {
-                        dp[thsIdx] += dp[idx];
+                        dp[^1] += dp[idx];
                     } else {
                         break;
                     }
                 } while (true);
-                return dp[thsIdx];
             }
+            return dp[^1]; // return the last
         }
     }
 
