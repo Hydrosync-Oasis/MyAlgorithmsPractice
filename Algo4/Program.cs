@@ -4,7 +4,7 @@ using System.Diagnostics;
 using static Algo4.Klotski;
 
 
-State start = new((int[][])[[6,14,15,13],[4,11,1,5],[10,7,2,9],[12,3,8,0]]);
+State start = new((int[][])[[7,2,3],[4,1,5],[8,0,6]]);
 
 (int x, int y)[] endPos = new (int, int)[start.N * start.N];// 最终状态的位置
 
@@ -45,5 +45,5 @@ int F(State state) {
         }
     }
 
-    return dis;
+    return dis * 134 / 100;
 }

@@ -103,7 +103,7 @@ namespace Algo4 {
             public State Copy() {
                 int[] copy = new int[N * N];
                 state.CopyTo(copy, 0);
-                State c = new State(copy);
+                State c = new(copy);
                 c.Step = Step;
                 return c;
             }
