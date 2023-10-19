@@ -11,7 +11,7 @@ namespace Algorithm {
             Stopwatch sw = Stopwatch.StartNew();
 
             //Test();
-            var res3 = 12;
+            var res3 = Exercises.TupleSameProduct([1, 2, 4, 5, 10]);
             sw.Stop();
             Console.WriteLine(res3);
             //Check();
@@ -87,13 +87,12 @@ namespace Algorithm {
         }
 
         static void Test() {
-            List<int> l = [];
-            Random ran = new();
-            for (int i = 0; i < 100000; i++) {
-                l.Add(ran.Next(1, 100000));
+            StringBuilder sb = new();
+            for (int i = 0; i < 999; i++) {
+                sb.Append(i);
+                sb.Append('\n');
             }
-            var res = Exercises.LongestCycle(l.ToArray());
-            Console.WriteLine(res);
+            File.WriteAllText(@"C:\Users\Silver Wind\Desktop\ipt.txt", sb.ToString());
         }
 
         public static int MinOperations(int[] nums1, int[] nums2) {
