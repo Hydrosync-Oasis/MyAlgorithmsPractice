@@ -131,5 +131,19 @@ namespace Algorithm {
             return res * 4;
         }
 
+        public static int MaxSatisfaction(int[] satisfaction) {
+            Array.Sort(satisfaction);
+            int n = satisfaction.Length;
+            int res = 0;
+            for (int i = 1; i <= n; i++) {
+                int sum = 0;
+                for (int j = n - i, cnt = 1; j < n; j++, cnt++) {
+                    sum += satisfaction[j] * cnt;
+                }
+                res = Math.Max(res, sum);
+            }
+            return res;
+        }
+
     }
 }

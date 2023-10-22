@@ -11,7 +11,7 @@ namespace Algorithm {
             Stopwatch sw = Stopwatch.StartNew();
 
             //Test();
-            var res3 = Exercises.TupleSameProduct([1, 2, 4, 5, 10]);
+            var res3 = Exercises.MaxSatisfaction([-1, -4, -5]);
             sw.Stop();
             Console.WriteLine(res3);
             //Check();
