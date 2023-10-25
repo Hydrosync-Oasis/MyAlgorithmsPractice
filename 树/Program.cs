@@ -1,24 +1,16 @@
 ﻿// See https://aka.ms/new-console-template for more information
+
 using 树;
-using 排序;
-using System.Diagnostics;
 
-AVLTree<long> tree = new();
+char[] cs = ['a', 'b', 'c', 'd', 'e', 'f'];
+ulong[] wt = [1, 2, 3, 4, 5, 6];
+HuffmanTree<char> t = new(cs, wt);
 
-int[] arr = ArraySort.GenerateOrderlyInts(1, 50);
-ArraySort.ShuffleArr(ref arr);
-Stopwatch sw = Stopwatch.StartNew();
-foreach (var item in arr) {
-    tree.Add(item);
+for (int i = 0; i < cs.Length; i++) {
+    Console.WriteLine(t.GetCode(cs[i]));
 }
-sw.Stop();
-Console.WriteLine($"添加耗时：{sw.Elapsed}");
-ArraySort.ShuffleArr(ref arr);
-sw.Restart();
-foreach (var item in tree) {
-    
-}
-sw.Stop();
-Console.WriteLine($"遍历耗时：{sw.Elapsed}");
 
-Console.WriteLine("Done.");
+var t2 = HuffmanTree<char>.CreateFromText("Available on the following websites with GPU acceleration".ToLower(), out string txt);
+Console.WriteLine(txt);
+Console.WriteLine("------");
+Console.WriteLine(t2.Decode("1110"));
