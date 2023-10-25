@@ -22,15 +22,7 @@ namespace 树 {
             public Node<T>? LeftChild { get; set; }
             public Node<T>? RightChild { get; set; }
 
-            public static bool operator <(Node<T> a, Node<T> b) => a.Weight.CompareTo(b.Weight) < 0;
-            public static bool operator >(Node<T> a, Node<T> b) => a.Weight.CompareTo(b.Weight) > 0;
-            public static bool operator >=(Node<T> a, Node<T> b) => a.Weight.CompareTo(b.Weight) >= 0;
-            public static bool operator <=(Node<T> a, Node<T> b) => a.Weight.CompareTo(b.Weight) <= 0;
-
-            public static bool operator ==(Node<T> a, Node<T> b) =>
-                a.Weight.CompareTo(b.Weight) == 0;
-            public static bool operator !=(Node<T> a, Node<T> b) =>
-                a.Weight.CompareTo(b.Weight) != 0;
+            public bool IsLeaf => LeftChild is null && RightChild is null;
 
             private string GetDebuggerDisplay() => $"权重：{Weight}, 数据：{Item}";
         }
@@ -112,19 +104,41 @@ namespace 树 {
         /// </summary>
         /// <param name="code">二进制字符串，仅包含0和1</param>
         /// <returns></returns>
-        public TItem Decode(string code) {
+        public TItem GetItem(string code) {
             Node<TItem> t = root;
             for (int i = 0; i < code.Length; i++) {
                 if (code[i] == '0') {
-                    t = t.LeftChild ?? throw new ArgumentException("密文不在该树中", nameof(code));
+                    t = t.LeftChild ?? throw new NotInTreeException(nameof(code));
                 } else {
-                    t = t.RightChild ?? throw new ArgumentException("密文不在该树中", nameof(code));
+                    t = t.RightChild ?? throw new NotInTreeException(nameof(code));
                 }
             }
-            if (t.LeftChild is not null || t.RightChild is not null) {
-                throw new ArgumentException("密文不在该树中", nameof(code));
+            if (!t.IsLeaf) {
+                throw new NotInTreeException(nameof(code));
             }
             return t.Item;
         }
+
+        public IList<TItem> Decode(string code) {
+            IList<TItem> list = new List<TItem>();
+            Node<TItem> t = root;
+            for (int i = 0; i < code.Length; i++) {
+                if (code[i] == '0') {
+                    t = t.LeftChild ?? throw new NotInTreeException(nameof(code));
+                } else {
+                    t = t.RightChild ?? throw new NotInTreeException(nameof(code));
+                }
+
+                if (t.IsLeaf) { 
+                    list.Add(t.Item);
+                    t = root;
+                }
+            }
+            return list;
+        }
+    }
+
+    public class NotInTreeException : ArgumentException {
+        public NotInTreeException(string paramName) : base("密文不在该树中", paramName) { }
     }
 }

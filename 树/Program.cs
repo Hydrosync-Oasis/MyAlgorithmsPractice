@@ -9,8 +9,9 @@ HuffmanTree<char> t = new(cs, wt);
 for (int i = 0; i < cs.Length; i++) {
     Console.WriteLine(t.GetCode(cs[i]));
 }
+Console.WriteLine(string.Concat(t.Decode("1101111011100")));
 
 var t2 = HuffmanTree<char>.CreateFromText("Available on the following websites with GPU acceleration".ToLower(), out string txt);
 Console.WriteLine(txt);
 Console.WriteLine("------");
-Console.WriteLine(t2.Decode("1110"));
+//Console.WriteLine(t2.Decode(""));
