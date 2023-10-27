@@ -1,27 +1,26 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
+﻿using System.Diagnostics;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace 树 {
-    internal class HuffmanTree<TItem> {
+    internal class HuffmanTree<TItem> where TItem : notnull {
         [DebuggerDisplay($"{{{nameof(GetDebuggerDisplay)}(),nq}}")]
-        private class Node<T>(T item, ulong weight) {
+        private class Node<T>(T? item, ulong weight) {
             /// <summary>
             /// 数据项
             /// </summary>
-            public T Item { get; private set; } = item;
+            public T? Item { get; private set; } = item;
             /// <summary>
             /// 实际权重值
             /// </summary>
             public ulong Weight { get; private set; } = weight;
-            public Node<T> Parent { get; set; }
+            public Node<T>? Parent { get; set; }
 
             public Node<T>? LeftChild { get; set; }
             public Node<T>? RightChild { get; set; }
 
+            /// <summary>
+            /// 返回该节点是否是叶子节点，叶子节点Item存储真正的值
+            /// </summary>
             public bool IsLeaf => LeftChild is null && RightChild is null;
 
             private string GetDebuggerDisplay() => $"权重：{Weight}, 数据：{Item}";
@@ -116,7 +115,7 @@ namespace 树 {
             if (!t.IsLeaf) {
                 throw new NotInTreeException(nameof(code));
             }
-            return t.Item;
+            return t.Item!;
         }
 
         public IList<TItem> Decode(string code) {
@@ -129,8 +128,8 @@ namespace 树 {
                     t = t.RightChild ?? throw new NotInTreeException(nameof(code));
                 }
 
-                if (t.IsLeaf) { 
-                    list.Add(t.Item);
+                if (t.IsLeaf) {
+                    list.Add(t.Item!);
                     t = root;
                 }
             }
