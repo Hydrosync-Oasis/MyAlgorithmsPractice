@@ -245,5 +245,95 @@ namespace Algorithm {
             }
         }
 
+        public static int HIndex(int[] citations) {
+            Array.Sort(citations);
+
+            int l = 0, r = citations.Length;
+            // T T T F F
+            while (l < r) {
+                int m = (l + r + 1) >> 1;
+                if (found(m) >= m) {
+                    l = m;
+                } else {
+                    r = m - 1;
+                }
+            }
+            return l;
+
+            int found(int val) {
+                int l = 0, r = citations.Length;
+                // 大于等于num的第一个数
+                while (l < r) {
+                    int m = (l + r) >> 1;
+                    if (citations[m] >= val) {
+                        r = m;
+                    } else {
+                        l = m + 1;
+                    }
+                }
+                return citations.Length - l;
+            }
+        }
+
+        public static int MinimumDistance(string word) {
+            int n = word.Length;
+            int[,,] dp = new int[26, 26, n];
+            // L, R, N
+            for (int i = 0; i < 26; i++) {
+                for (int j = 0; j < 26; j++) {
+                    for (int k = 0; k < n; k++) {
+                        dp[i, j, k] = int.MaxValue;
+                    }
+                }
+            }
+
+            for (int i = 0; i < 26; i++) {
+                dp[word[0] - 'A', i, 0] = 0;
+            }
+            for (int i = 0; i < 26; i++) {
+                dp[i, word[0] - 'A', 0] = 0;
+            }
+
+            for (int i = 1; i < n; i++) {
+                int pre = word[i - 1] - 'A';
+                int cur = word[i] - 'A';
+                for (int j = 0; j < 26; j++) {
+                    if (dp[j, pre, i - 1] != int.MaxValue) {
+                        dp[cur, pre, i] = Math.Min(dp[cur, pre, i],
+                            dp[j, pre, i - 1] + dist(j, cur));
+                    }
+                    if (dp[pre, j, i - 1] != int.MaxValue) {
+                        dp[pre, cur, i] = Math.Min(dp[pre, cur, i],
+                            dp[pre, j, i - 1] + dist(j, cur));
+                    }
+                }
+                for (int j = 0; j < 26; j++) {
+                    if (dp[pre, j, i - 1] != int.MaxValue) {
+                        dp[cur, j, i] = Math.Min(dp[cur, j, i],
+                            dp[pre, j, i - 1] + dist(pre, cur));
+                    }
+                    if (dp[j, pre, i - 1] != int.MaxValue) {
+                        dp[j, cur, i] = Math.Min(dp[j, cur, i],
+                            dp[j, pre, i - 1] + dist(pre, cur));
+                    }
+                }
+            }
+            int res = int.MaxValue;
+            for (int i = 0; i < 26; i++) {
+                for (int j = 0; j < 26; j++) {
+                    res = Math.Min(res, dp[i, j, n - 1]);
+                }
+            }
+            return res;
+
+
+            int dist(int a, int b) {
+                int ai = a / 6;
+                int aj = a % 6;
+                int bi = b / 6;
+                int bj = b % 6;
+                return Math.Abs(ai - bi) + Math.Abs(aj - bj);
+            }
+        }
     }
 }

@@ -11,7 +11,7 @@ namespace Algorithm {
             Stopwatch sw = Stopwatch.StartNew();
 
             //Test();
-            var res3 = Exercises.MaxEqualFreq([1, 1, 1, 2, 2, 2, 3, 3, 3]);
+            var res3 = Exercises.MinimumDistance("Z");
             sw.Stop();
             Console.WriteLine(res3);
             //Check();
