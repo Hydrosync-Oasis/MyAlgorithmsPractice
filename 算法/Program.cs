@@ -11,7 +11,8 @@ namespace Algorithm {
             Stopwatch sw = Stopwatch.StartNew();
 
             //Test();
-            var res3 = Exercises.MinimumDistance("Z");
+            var res3 =
+            Exercises.FindMaximumXOR([14, 70, 53, 83, 49, 91, 36, 80, 92, 51, 66, 70]);
             sw.Stop();
             Console.WriteLine(res3);
             //Check();
@@ -87,12 +88,13 @@ namespace Algorithm {
         }
 
         static void Test() {
-            StringBuilder sb = new();
-            for (int i = 0; i < 999; i++) {
-                sb.Append(i);
-                sb.Append('\n');
+            int a = 1;
+            for (int i = 0; i < 100000; i++) {
+                for (int j = 0; j < 100000; j++) {
+                    a++;
+                }
             }
-            File.WriteAllText(@"C:\Users\Silver Wind\Desktop\ipt.txt", sb.ToString());
+            Console.WriteLine(a);
         }
 
         public static int MinOperations(int[] nums1, int[] nums2) {

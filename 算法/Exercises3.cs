@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Reflection.Metadata.Ecma335;
 using System.Security.AccessControl;
 using System.Text;
 using System.Threading.Tasks;
@@ -335,5 +336,43 @@ namespace Algorithm {
                 return Math.Abs(ai - bi) + Math.Abs(aj - bj);
             }
         }
+
+        public static int FindMaximumXOR(int[] nums) {
+            int max = 0;
+            for (int i = 0; i < nums.Length; i++) {
+                max = Math.Max(max, bitCnt(nums[i]));
+            }
+
+            int curAns = 0;
+            int mask = 0;
+            for (int i = max - 1; i >= 0; i--) {
+                HashSet<int> seen = new();
+                mask |= 1 << i; // 逐步递推，
+                int tryyy = curAns | (1 << i); // 能不能实现这一位是一
+                bool flag = false;
+                for (int j = 0; j < nums.Length; j++) {
+                    if (seen.Contains(tryyy ^ (nums[j] & mask))) {
+                        flag = true;
+                        break;
+                    }
+                    seen.Add(nums[j] & mask);
+                }
+                if (flag) {
+                    curAns = tryyy;
+                }
+            }
+            return curAns;
+
+            static int bitCnt(int num) {
+                int cnt = 0;
+                while (num > 0) {
+                    cnt++;
+                    num >>= 1;
+                }
+                return cnt;
+            }
+        }
+        
+
     }
 }
