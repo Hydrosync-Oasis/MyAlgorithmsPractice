@@ -372,7 +372,42 @@ namespace Algorithm {
                 return cnt;
             }
         }
-        
+
+        public static int MaxProduct(string[] words) {
+            int n = words.Length;
+            HashSet<int>[] albt = new HashSet<int>[26];// 存放下标
+            for (int i = 0; i < albt.Length; i++) {
+                albt[i] = new();
+            }
+            for (int i = 0; i < n; i++) {
+                for (int j = 0; j < words[i].Length; j++) {
+                    albt[words[i][j] - 'a'].Add(i);
+                }
+            }
+
+            bool[,] can = new bool[n, n];
+            for (int i = 0; i < n; i++) {
+                for (int j = 0; j < n; j++) {
+                    can[i, j] = true;
+                }
+            }
+            for (int i = 0; i < albt.Length; i++) {
+                foreach (var j in albt[i]) {
+                    foreach (var k in albt[i]) {
+                        can[j, k] = false;
+                    }
+                }
+            }
+            int res = 0;
+            for (int i = 0; i < n; i++) {
+                for (int j = i + 1; j < n; j++) {
+                    if (can[i, j]) {
+                        res = Math.Max(res, words[i].Length * words[j].Length);
+                    }
+                }
+            }
+            return res;
+        }
 
     }
 }
