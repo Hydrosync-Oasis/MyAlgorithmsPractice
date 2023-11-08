@@ -449,7 +449,53 @@ namespace Algorithm {
             }
             Console.WriteLine("---");
         }
+
+        public static string DecodeAtIndex(string s, int k) {
+            long curLen = 0;
+            long lastLen = 0;
+            // 后面没数字的用1等效
+            if (char.IsLetter(s[^1])) {
+                s += '1';
+            }
+            for (int i = 0; i < s.Length; i++) {
+                if (char.IsDigit(s[i])) {
+                    lastLen = (lastLen + curLen) * (s[i] - '0');
+                    curLen = 0;
+                } else {
+                    curLen++;
+                }
+            }
+            // 先求循环节长度
+            if (curLen != 0) {
+                throw new Exception();
+            }
+            s = '1' + s;
+            long part = 0;
+            long find = k - 1;
+            for (int i = s.Length - 1; i >= 0; i--) {
+                if (char.IsDigit(s[i])) {
+                        long tmp = lastLen;
+                        lastLen -= curLen;
+                        long multiplied = lastLen;
+                        lastLen /= (s[i] - '0');
+                        if (find >= tmp - curLen) {
+                            return s[(int)(find - multiplied + i+1)].ToString();
+                        } else {
+
+                            // wannaFind = false;
+                        }
+                    //lastLen /= (s[i] - '0');
+                    part = lastLen;
+                    find %= part;
+                    curLen = 0;
+
+                } else {
+                    curLen++;
+                }
+            }
+
+            return "";
+        }
     }
-
-
 }
+

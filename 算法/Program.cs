@@ -12,7 +12,7 @@ namespace Algorithm {
 
             //Test();
             var res3 =
-                Exercises.MaxDotProduct([-3, -8, 3, -10, 1, 3, 9], [9, 2, 3, 7, -9, 1, -8, 5, -1, -1]);
+                Exercises.DecodeAtIndex("a2345678999999999999999", 1);
             sw.Stop();
             Console.WriteLine(res3);
             //Check();
