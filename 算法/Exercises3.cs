@@ -465,7 +465,6 @@ namespace Algorithm {
                     curLen++;
                 }
             }
-            // 先求循环节长度
             if (curLen != 0) {
                 throw new Exception();
             }
@@ -474,17 +473,14 @@ namespace Algorithm {
             long find = k - 1;
             for (int i = s.Length - 1; i >= 0; i--) {
                 if (char.IsDigit(s[i])) {
-                        long tmp = lastLen;
-                        lastLen -= curLen;
-                        long multiplied = lastLen;
-                        lastLen /= (s[i] - '0');
-                        if (find >= tmp - curLen) {
-                            return s[(int)(find - multiplied + i+1)].ToString();
-                        } else {
-
-                            // wannaFind = false;
-                        }
-                    //lastLen /= (s[i] - '0');
+                    long tmp = lastLen;
+                    lastLen -= curLen;
+                    long multiplied = lastLen;
+                    lastLen /= (s[i] - '0');
+                    if (find >= tmp - curLen) {
+                        return s[(int)(find - multiplied + i + 1)].ToString();
+                        // 前面加了个虚拟数，所以下标要加一
+                    }
                     part = lastLen;
                     find %= part;
                     curLen = 0;
@@ -496,6 +492,95 @@ namespace Algorithm {
 
             return "";
         }
+
+        public static int MaximumMinutes(int[][] grid) {
+            Queue<(int, int)> que = new();
+            int n = grid.Length;
+            int m = grid[0].Length;
+            for (int i = 0; i < n; i++) {
+                for (int j = 0; j < m; j++) {
+                    if (grid[i][j] == 1) {
+                        que.Enqueue((i, j));
+                    }
+                    if (grid[i][j] == 2) {
+                        grid[i][j] = -1;
+                    }
+                }
+            }
+            int[][] dire = new int[4][] { new int[] { 1, 0 }, new int[] { -1, 0 },
+                new int[] { 0, 1 }, new int[] { 0, -1 } };
+
+            while (que.Count > 0) {
+                var tmp = que.Dequeue();
+                int x = tmp.Item1, y = tmp.Item2;
+                for (int i = 0; i < dire.Length; i++) {
+                    int curX = dire[i][0] + x;
+                    int curY = dire[i][1] + y;
+                    if (curX >= 0 && curX < n && curY >= 0 && curY < m) {
+                        if (grid[curX][curY] != 0) {
+                            continue;
+                        }
+                        grid[curX][curY] = grid[x][y] + 1;
+                        que.Enqueue((curX, curY));
+                    }
+                }
+            }
+
+            grid[0][0] = -1;
+
+            int l = -1, r = 1000000000;
+            while (l < r) {
+                int mid = (l + r + 1) >> 1;
+                if (check(mid)) {
+                    l = mid;
+                } else {
+                    r = mid - 1;
+                }
+            }
+            check(0);
+            return l;
+
+            bool check(int stay) {
+                Queue<(int, int)> que = new();
+                int[,] copy = new int[n, m];
+                for (int i = 0; i < n; i++) {
+                    for (int j = 0; j < m; j++) {
+                        copy[i, j] = grid[i][j];
+                        if (copy[i, j] == 0) {
+                            copy[i, j] = int.MaxValue;
+                        }
+                    }
+                }
+                copy[0, 0] = stay + 1;
+                // copy[n - 1, m - 1] = int.MaxValue;
+                que.Enqueue((0, 0));
+                while (que.Count > 0) {
+                    var tmp = que.Dequeue();
+                    int x = tmp.Item1, y = tmp.Item2;
+                    if (tmp == ((n - 1, m - 1))) {
+                        return true;
+                    }
+                    // use dire
+                    for (int i = 0; i < dire.Length; i++) {
+                        int curX = dire[i][0] + x;
+                        int curY = dire[i][1] + y;
+                        if (curX >= 0 && curX < n && curY >= 0 && curY < m) {
+                            if (copy[curX, curY] == -1) {
+                                continue;
+                            }
+                            if (copy[curX, curY] > copy[x, y] + 1 || // 题目允许火和人同时到达安全屋
+                                copy[curX, curY] == copy[x, y] + 1 && (curX, curY) == (n - 1, m - 1)) {
+
+                                copy[curX, curY] = copy[x, y] + 1;
+                                que.Enqueue((curX, curY));
+                            }
+                        }
+                    }
+                }
+                return false;
+            }
+        }
+
     }
 }
 

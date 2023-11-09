@@ -12,7 +12,7 @@ namespace Algorithm {
 
             //Test();
             var res3 =
-                Exercises.DecodeAtIndex("a2345678999999999999999", 1);
+                Exercises.MaximumMinutes([[0, 2, 0, 0, 1], [0, 2, 0, 2, 2], [0, 2, 0, 0, 0], [0, 0, 2, 2, 0], [0, 0, 0, 0, 0]]);
             sw.Stop();
             Console.WriteLine(res3);
             //Check();
