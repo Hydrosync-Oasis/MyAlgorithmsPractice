@@ -537,7 +537,6 @@ namespace Algorithm {
                     r = mid - 1;
                 }
             }
-            check(0);
             return l;
 
             bool check(int stay) {
@@ -579,6 +578,52 @@ namespace Algorithm {
                 }
                 return false;
             }
+        }
+
+        public static int[] SuccessfulPairs(int[] spells, int[] potions, long success) {
+            Array.Sort(potions);
+            int[] res = new int[spells.Length];
+            for (int i = 0; i < res.Length; i++) {
+                res[i] = find(spells[i]);
+            }
+            return res;
+
+            int find(int times) {
+                int l = 0, r = potions.Length;
+                while (l < r) {
+                    int m = (l + r) >> 1;
+                    if ((long)potions[m] * times >= success) {
+                        r = m;
+                    } else {
+                        l = m + 1;
+                    }
+                }
+                return potions.Length - l;
+            }
+        }
+
+        public static int[] SuccessfulPairs2(int[] spells, int[] potions, long success) {
+            int max = -1;
+            for (int i = 0; i < spells.Length; i++) {
+                max = Math.Max(max, spells[i]);
+            }
+            int[] bucket = new int[max + 2];
+            for (int i = 0; i < potions.Length; i++) {
+                potions[i] = (int)Math.Ceiling(success * 1.0 / potions[i]);
+                if (potions[i] < 0) {
+                    // 溢出
+                    potions[i] = int.MaxValue;
+                }
+                bucket[Math.Min(max + 1, potions[i])]++;
+            }
+            for (int i = 1; i < bucket.Length; i++) {
+                bucket[i] += bucket[i - 1];
+            }
+            int[] res = new int[spells.Length];
+            for (int i = 0; i < res.Length; i++) {
+                res[i] = bucket[spells[i]];
+            }
+            return res;
         }
 
     }

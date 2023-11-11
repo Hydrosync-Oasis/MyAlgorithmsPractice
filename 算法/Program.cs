@@ -12,7 +12,7 @@ namespace Algorithm {
 
             //Test();
             var res3 =
-                Exercises.MaximumMinutes([[0, 2, 0, 0, 1], [0, 2, 0, 2, 2], [0, 2, 0, 0, 0], [0, 0, 2, 2, 0], [0, 0, 0, 0, 0]]);
+                Exercises.SuccessfulPairs2(GenArr(@"D:\1.txt"), GenArr(@"D:\2.txt"), 5671765041);
             sw.Stop();
             Console.WriteLine(res3);
             //Check();
@@ -37,22 +37,14 @@ namespace Algorithm {
 
             Console.WriteLine(result);
         }
-        static int[][] GenArr() {
-            string filePath = "C:\\Users\\Silver Wind\\Desktop\\1.txt"; // 将 "path_to_your_file.txt" 替换为您的文件路径
+        static int[] GenArr(string path) {
+            string filePath = path; // 将 "path_to_your_file.txt" 替换为您的文件路径
 
             try {
                 string content = File.ReadAllText(filePath);
-                int[][] array = Parse2DArray(content);
+                int[] array = Parse1DArray(content);
                 return array;
-                // 输出解析后的二维数组
-                Console.WriteLine("解析后的二维数组：");
-                foreach (int[] row in array) {
-                    Console.Write("[ ");
-                    foreach (int element in row) {
-                        Console.Write(element + " ");
-                    }
-                    Console.WriteLine("]");
-                }
+
             } catch (Exception ex) {
                 Console.WriteLine("发生错误：" + ex.Message);
             }
