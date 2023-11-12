@@ -12,7 +12,7 @@ namespace Algorithm {
 
             //Test();
             var res3 =
-                Exercises.SuccessfulPairs2(GenArr(@"D:\1.txt"), GenArr(@"D:\2.txt"), 5671765041);
+                Exercises.MinOperations2([1, 5, 4], [2, 5, 3]);
             sw.Stop();
             Console.WriteLine(res3);
             //Check();

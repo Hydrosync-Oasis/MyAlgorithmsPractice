@@ -626,6 +626,51 @@ namespace Algorithm {
             return res;
         }
 
+        public static int MinOperations2(int[] nums1, int[] nums2) {
+            const int ERROR = 1010;
+            int n = nums1.Length;
+            int case1 = calc();
+            (nums1[^1], nums2[^1]) = (nums2[^1], nums1[^1]);
+            int case2 = 1 + calc();
+            int res = Math.Min(case1, case2);
+            if (res == ERROR) {
+                return -1;
+            }
+            return res;
+
+            int calc() {
+                int[] c1 = new int[n];
+                int[] c2 = new int[n];
+                Array.Copy(nums1, c1, n);
+                Array.Copy(nums2, c2, n);
+                int res = 0;
+                int m1 = c1[^1];
+                int m2 = c2[^1];
+                for (int i = 0; i < n - 1; i++) {
+                    if (c1[i] > m1) {
+                        (c1[i], c2[i]) = (c2[i], c1[i]);
+                        res++;
+                    }
+                }
+                for (int i = 0; i < n - 1; i++) {
+                    if (c2[i] > m2) {
+                        (c1[i], c2[i]) = (c2[i], c1[i]);
+                        res++;
+                    }
+
+                }
+                for (int i = 0; i < n - 1; i++) {
+                    if (c1[i] > c1[^1]) {
+                        return ERROR;
+                    }
+                    if (c2[i] > c2[^1]) {
+                        return ERROR;
+                    }
+                }
+                return res;
+            }
+        }
+
     }
 }
 
