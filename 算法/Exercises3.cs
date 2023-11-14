@@ -671,6 +671,50 @@ namespace Algorithm {
             }
         }
 
+        public static int FindTheCity(int n, int[][] edges, int distanceThreshold) {
+            int[,] dis = new int[n, n];
+            const int CANT = int.MaxValue;
+            for (int i = 0; i < n; i++) {
+                for (int j = 0; j < n; j++) {
+                    dis[i, j] = CANT;
+                }
+            }
+            for (int i = 0; i < edges.Length; i++) {
+                dis[edges[i][0], edges[i][1]] = edges[i][2];
+                dis[edges[i][1], edges[i][0]] = edges[i][2];
+                dis[edges[i][0], edges[i][0]] = 0;
+                dis[edges[i][1], edges[i][1]] = 0;
+            }
+            for (int i = 0; i < n; i++) {
+                for (int j = 0; j < n; j++) {
+                    for (int k = 0; k < n; k++) {
+                        if (dis[j, i] == CANT || dis[i, k] == CANT) {
+                            continue;
+                        }
+                        if (dis[j, i] + dis[i, k] < dis[j, k]) {
+                            dis[j, k] = dis[j, i] + dis[i, k];
+                        }
+                    }
+                }
+            }
+            int min = int.MaxValue;
+            int res = 0;
+            for (int i = 0; i < n; i++) {
+                int cnt = 0;
+                for (int j = 0; j < n; j++) {
+                    if (dis[i, j] <= distanceThreshold) {
+                        cnt++;
+                    }
+                }
+                cnt--;
+                if (cnt <= min) {
+                    min = cnt;
+                    res = i;
+                }
+            }
+            return res;
+        }
+
     }
 }
 

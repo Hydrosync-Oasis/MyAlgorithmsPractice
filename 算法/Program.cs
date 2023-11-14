@@ -12,7 +12,7 @@ namespace Algorithm {
 
             //Test();
             var res3 =
-                Exercises.MinOperations2([1, 5, 4], [2, 5, 3]);
+                Exercises.FindTheCity(4, [[0, 1, 3], [1, 2, 1], [1, 3, 4], [2, 3, 1]], 4);
             sw.Stop();
             Console.WriteLine(res3);
             //Check();
