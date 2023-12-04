@@ -1,17 +1,23 @@
 ﻿// See https://aka.ms/new-console-template for more information
 
+using System.Diagnostics;
 using 树;
 
-char[] cs = ['a', 'b', 'c', 'd', 'e', 'f'];
-ulong[] wt = [1, 2, 3, 4, 5, 6];
-HuffmanTree<char> t = new(cs, wt);
+SegmentTreeDynamic tree = new(1, 20);
+tree.Update(1, 5, 2);
+tree.Update(2, 6, 3);
+tree.Add(1, 3, 3);
+// tree.Update(1, 2, 10);
+// tree.Update(2, 2, 10);
+// tree.Update(4, 5, 1);
 
-for (int i = 0; i < cs.Length; i++) {
-    Console.WriteLine(t.GetCode(cs[i]));
-}
-Console.WriteLine(string.Concat(t.Decode("1101111011100")));
 
-var t2 = HuffmanTree<char>.CreateFromText("Available on the following websites with GPU acceleration".ToLower(), out string txt);
-Console.WriteLine(txt);
-Console.WriteLine("------");
-//Console.WriteLine(t2.Decode(""));
+int res1 = tree.Query(1, 3);
+int res2 = tree.Query(4, 6);
+int res3 = tree.Query(3, 4);
+Console.WriteLine(res1);
+Console.WriteLine(res2);
+Console.WriteLine(res3);
+
+
+

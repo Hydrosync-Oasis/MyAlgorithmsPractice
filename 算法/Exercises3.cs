@@ -715,6 +715,49 @@ namespace Algorithm {
             return res;
         }
 
+        public static bool IsPossible(int[] target) {
+            int sum = target.Sum();
+            PriorityQueue<int, int> pq = new(new MaxHeapComparer<int>());
+            for (int i = 0; i < target.Length; i++) {
+                pq.Enqueue(i, target[i]);
+            }
+            while (target[pq.Peek()] != 1) {
+                var tmp = pq.Dequeue();
+                int x = target[tmp];
+                if (x > sum - x) {
+                    int a = target[tmp];
+                    target[tmp] %= sum - x;
+                    if (target[tmp] == 0) {
+                        target[tmp] = sum - x;
+                    }
+                    sum -= a - target[tmp];
+                    pq.Enqueue(tmp, target[tmp]);
+                } else {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        public static TreeNode BstToGst2(TreeNode root) {
+            f(root, 0);
+            return root;
+
+            int f(TreeNode cur, int rightSum) {
+                if (cur is null) {
+                    return 0;
+                }
+                int sum = rightSum;
+                int ret = 0;
+                sum += f(cur.right, rightSum);
+                ret += sum - rightSum;
+                ret += cur.val;
+                cur.val += sum;
+                ret += f(cur.left, cur.val);
+                return ret;
+            }
+        }
+
     }
 }
 

@@ -12,7 +12,7 @@ namespace Algorithm {
 
             //Test();
             var res3 =
-                Exercises.FindTheCity(4, [[0, 1, 3], [1, 2, 1], [1, 3, 4], [2, 3, 1]], 4);
+                Exercises.BstToGst2(Codec.DeserializeLevelO("4, 1, 6, 0, 2, 5, 7, null, null, null, 3, null, null, null, 8"));
             sw.Stop();
             Console.WriteLine(res3);
             //Check();
@@ -50,6 +50,7 @@ namespace Algorithm {
             }
             return null;
         }
+
 
         static int[][] Parse2DArray(string input) {
             var pattern = @"\[([\d, \[\]-]*?)\]";

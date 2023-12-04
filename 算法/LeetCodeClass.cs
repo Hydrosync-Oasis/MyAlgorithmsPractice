@@ -1,15 +1,5 @@
 ﻿using ServiceStack;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.Design;
-using System.Data.SqlTypes;
-using System.Globalization;
-using System.Linq;
-using System.Net;
-using System.Runtime.ConstrainedExecution;
 using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Linq;
 using 树;
 
 namespace Algorithm {
@@ -538,7 +528,7 @@ namespace Algorithm {
         }
 
         public static TreeNode? DeserializeLevelO(string data) {
-            Queue<string> strQue = new(data.Split(',', options: StringSplitOptions.RemoveEmptyEntries));
+            Queue<string> strQue = new(data.Split(new char[] { ',', ' ' }, options: StringSplitOptions.RemoveEmptyEntries));
             if (strQue.Peek() == "null") {
                 return null;
             }
@@ -1022,6 +1012,42 @@ namespace Algorithm {
                 res |= Fill(graph[pos][i]);
             }
             return res;
+        }
+    }
+
+    class NumArray {
+        SegmentTree tree;
+
+        public NumArray(int[] nums) {
+            tree = new(nums);
+        }
+
+        public void Update(int index, int val) {
+            tree.SetNums(index, index, val);
+        }
+
+        public int SumRange(int left, int right) {
+            return tree.GetSum(left, right);
+        }
+    }
+
+    public class RangeModule {
+        SegmentTreeDynamic tree;
+
+        public RangeModule() {
+            tree = new(1, (int)1e9);
+        }
+
+        public void AddRange(int left, int right) {
+            tree.Update(left, right, 1);
+        }
+
+        public bool QueryRange(int left, int right) {
+            return tree.Query(left, right) >= right - left + 1;
+        }
+
+        public void RemoveRange(int left, int right) {
+            tree.Update(left, right, 0);
         }
     }
 
