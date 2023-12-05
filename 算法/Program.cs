@@ -12,7 +12,7 @@ namespace Algorithm {
 
             //Test();
             var res3 =
-                Exercises.BstToGst2(Codec.DeserializeLevelO("4, 1, 6, 0, 2, 5, 7, null, null, null, 3, null, null, null, 8"));
+                Exercises.MinimumFuelCost([[3, 1], [3, 2], [1, 0], [0, 4], [0, 5], [4, 6]], 2);
             sw.Stop();
             Console.WriteLine(res3);
             //Check();

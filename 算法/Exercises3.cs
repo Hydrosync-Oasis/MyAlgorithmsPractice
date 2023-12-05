@@ -758,6 +758,44 @@ namespace Algorithm {
             }
         }
 
+        public static long MinimumFuelCost(int[][] roads, int seats) {
+            int n = roads.Length + 1;
+            HashSet<int>[] graph = new HashSet<int>[n];
+            for (int i = 0; i < graph.Length; i++) {
+                graph[i] = new();
+            }
+
+            for (int i = 0; i < roads.Length; i++) {
+                graph[roads[i][0]].Add(roads[i][1]);
+                graph[roads[i][1]].Add(roads[i][0]);
+            }
+
+            long[] cnt = new long[n]; // 以i为根的子树的节点数
+            f(0, 0);
+            long res = 0;
+            for (int i = 1; i < n; i++) {
+                res += calc(i); 
+            }
+            return res;
+
+            long calc(int node) { // 计算车的数量
+                return (cnt[node] + seats - 1) / seats;
+            }
+
+            long f(int node, int pa) {
+                long oth = 0;
+                if (cnt[node] != 0)
+                    return cnt[node];
+                foreach (var item in graph[node]) {
+                    if (item != pa) {
+                        oth += f(item, node);
+                    }
+                }
+                oth++;
+                return cnt[node] = oth;
+            }
+        }
+
     }
 }
 
