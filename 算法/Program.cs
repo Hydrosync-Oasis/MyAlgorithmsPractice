@@ -12,7 +12,7 @@ namespace Algorithm {
 
             //Test();
             var res3 =
-                Exercises.MinimumFuelCost([[3, 1], [3, 2], [1, 0], [0, 4], [0, 5], [4, 6]], 2);
+                Exercises.ReverseOddLevels(Codec.DeserializeLevelO("2,3,5,8,13,21,34"));
             sw.Stop();
             Console.WriteLine(res3);
             //Check();

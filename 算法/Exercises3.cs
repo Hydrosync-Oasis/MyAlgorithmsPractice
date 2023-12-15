@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ServiceStack;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -774,7 +775,7 @@ namespace Algorithm {
             f(0, 0);
             long res = 0;
             for (int i = 1; i < n; i++) {
-                res += calc(i); 
+                res += calc(i);
             }
             return res;
 
@@ -796,6 +797,175 @@ namespace Algorithm {
             }
         }
 
+        public static int NextBeautifulNumber(int n) {
+            List<int> res = new();
+            StringBuilder sb = new();
+            int[] bucket = new int[10];
+
+            for (int i = 1; i <= 10000000; i++) {
+                Array.Fill(bucket, 0);
+                int tmp = i;
+                while (tmp != 0) {
+                    bucket[tmp % 10]++;
+                    tmp /= 10;
+                }
+                bool flag = true;
+                for (int j = 0; j < 10; j++) {
+                    if (bucket[j] != 0 && bucket[j] != j) {
+                        flag = false;
+                    }
+                    if (bucket[j] != 0) {
+                        tmp += j;
+                    }
+                }
+                if (flag) {
+                    res.Add(i);
+                }
+            }
+            for (int i = 0; i < res.Count; i++) {
+                sb.Append(res[i]);
+                sb.Append(',');
+            }
+            File.WriteAllText(@"C:\Users\Silver Wind\Desktop\1.txt", sb.ToString());
+            int l = 0, r = res.Count;
+            // F F T T T T
+            while (l < r) {
+                int m = (l + r) >> 1;
+                if (res[m] > n) {
+                    r = m;
+                } else {
+                    l = m + 1;
+                }
+            }
+
+            return res[l];
+        }
+
+        public static int MaxNumEdgesToRemove(int n, int[][] edges) {
+            int cnt1 = n, cnt2 = n;
+            int[] pa1 = new int[n + 1];
+            int[] pa2 = new int[n + 1];
+            for (int i = 0; i < n + 1; i++) {
+                pa1[i] = i;
+                pa2[i] = i;
+            }
+
+            int res = 0;
+            for (int i = 0; i < edges.Length; i++) {
+                var x = edges[i];
+                if (x[0] == 3) {
+                    if (!union(pa1, x[1], x[2], ref cnt1) & !union(pa2, x[1], x[2], ref cnt2)) {
+                        res++;
+                    }
+                }
+            }
+            for (int i = 0; i < edges.Length; i++) {
+                var x = edges[i];
+                if (x[0] == 1) {
+                    if (!union(pa1, x[1], x[2], ref cnt1)) {
+                        res++;
+                    }
+                } else if (x[0] == 2) {
+                    if (!union(pa2, x[1], x[2], ref cnt2)) {
+                        res++;
+                    }
+                }
+            }
+
+            return cnt1 > 1 || cnt2 > 1 ? -1 : res;
+
+            int find(int[] pa, int x) {
+                if (pa[x] == x) {
+                    return x;
+                }
+                return pa[x] = find(pa, pa[x]);
+            }
+
+            bool union(int[] pa, int x, int y, ref int cnt) {
+                int a = find(pa, x);
+                int b = find(pa, y);
+                if (a != b) {
+                    pa[a] = b;
+                    cnt--;
+                }
+                return a != b; // 返回是否真正合并了
+            }
+        }
+
+        public static int[] SecondGreaterElement(int[] nums) {
+            int n = nums.Length;
+            int[] res = new int[n];
+            Stack<int> st1 = new();
+            Stack<int> st2 = new();
+            Array.Fill(res, -1);
+            for (int i = 0; i < n; i++) {
+                List<int> tmp = new();
+                while (st2.Count > 0 && nums[st2.Peek()] < nums[i]) {
+                    res[st2.Pop()] = nums[i];
+                }
+                while (st1.Count > 0 && nums[st1.Peek()] < nums[i]) {
+                    tmp.Add(st1.Pop());
+                }
+                st1.Push(i);
+                tmp.Reverse();
+                foreach (var item in tmp) {
+                    st2.Push(item);
+                }
+            }
+
+            return res;
+        }
+
+        public static TreeNode ReverseOddLevels(TreeNode root) {
+            Queue<(TreeNode, int)> que = new();
+            que.Enqueue((root, 0));
+            while (que.Count > 0) {
+                var tmp = que.Peek();
+                List<TreeNode> pa = new();
+                List<int> ls = new();
+                if (tmp.Item1.left is null) {
+                    que.Dequeue();
+                }
+
+                if (tmp.Item2 % 2 == 0) {
+                    while (que.Count > 0 && que.Peek().Item1.left is not null) {
+                        pa.Add(que.Dequeue().Item1);
+                        ls.Add(pa[^1].left.val);
+                        ls.Add(pa[^1].right.val);
+                    }
+                    ls.Reverse();
+                    for (int i = 0; i < pa.Count; i++) {
+                        pa[i].left.val = ls[2 * i];
+                        pa[i].right.val = ls[2 * i + 1];
+                    }
+                    foreach (var item in pa) {
+                        que.Enqueue((item.left, tmp.Item2 + 1));
+                        que.Enqueue((item.right, tmp.Item2 + 1));
+                    }
+                } else {
+                    tmp = que.Dequeue();
+                    if (tmp.Item1.left is not null) {
+                        que.Enqueue((tmp.Item1.left, tmp.Item2 + 1));
+                        que.Enqueue((tmp.Item1.right, tmp.Item2 + 1));
+                    }
+                }
+            }
+            return root;
+        }
+
+        public static string MakeSmallestPalindrome(string s) {
+            char[] res = s.ToCharArray();
+            int n = s.Length;
+            for (int i = 0; i < n / 2; i++) {
+                res[i] = res[^(i + 1)] = (char)Math.Min(s[i], s[^(i + 1)]);
+            }
+            return string.Concat(res);
+        }
+
+        public static int MinimumEffortPath(int[][] heights) {
+            PriorityQueue<(int, int), int> pq = new();
+            
+        }
+
     }
 }
-

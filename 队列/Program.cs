@@ -3,7 +3,7 @@
 namespace 队列 {
     internal class Program {
         static void Main(string[] args) {
-            IQueue<int> que = new Deque<int>();
+            IQueue<int> que = new Queue2<int>();
             Queue<int> right = new();
             Random ran = new();
             for (int i = 0; i < 50000000; i++) {
