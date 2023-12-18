@@ -10,9 +10,15 @@ namespace Algorithm {
             //Exercises.ReverseStack(st);
             Stopwatch sw = Stopwatch.StartNew();
 
+
             //Test();
-            var res3 =
-                Exercises.ReverseOddLevels(Codec.DeserializeLevelO("2,3,5,8,13,21,34"));
+            var res3 = new CountIntervals();
+            res3.Add(2, 3);
+            res3.Add(7, 10);
+            Console.WriteLine(res3.Count());
+            res3.Add(5, 8);
+            Console.WriteLine(res3.Count());
+            // Exercises.MinimumEffortPath([[1,2,3],[3,8,4],[5,3,5]]);
             sw.Stop();
             Console.WriteLine(res3);
             //Check();

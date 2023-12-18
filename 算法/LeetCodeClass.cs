@@ -1051,4 +1051,19 @@ namespace Algorithm {
         }
     }
 
+    public class CountIntervals {
+        SegmentTreeDynamic tree;
+        const int N = 1000000000;
+        public CountIntervals() {
+            tree = new(1, N);
+        }
+
+        public void Add(int left, int right) {
+            tree.Update(left, right, 1);
+        }
+
+        public int Count() {
+            return tree.Query(1, N);
+        }
+    }
 }

@@ -964,7 +964,42 @@ namespace Algorithm {
 
         public static int MinimumEffortPath(int[][] heights) {
             PriorityQueue<(int, int), int> pq = new();
-            
+            pq.Enqueue((0, 0), 0);
+            int n = heights.Length;
+            int m = heights[0].Length;
+            int[,] dis = new int[n, m];
+            for (int i = 0; i < n; i++) {
+                for (int j = 0; j < m; j++) {
+                    dis[i, j] = int.MaxValue;
+                }
+            }
+
+            dis[0, 0] = 0;
+            bool[,] vis = new bool[n, m];
+            int[][] dire = new int[4][] { new int[] { 1, 0 }, new int[] { -1, 0 },
+                           new int[] { 0, 1 }, new int[] { 0, -1 } };
+            while (pq.Count > 0) {
+                var tmp = pq.Dequeue();
+                int x = tmp.Item1;
+                int y = tmp.Item2;
+                if (vis[x, y]) {
+                    continue;
+                }
+
+                vis[x, y] = true;
+                // 1111
+                for (int i = 0; i < dire.Length; i++) {
+                    int curX = dire[i][0] + x;
+                    int curY = dire[i][1] + y;
+                    if (curX >= 0 && curY >= 0 && curX < n && curY < m) {
+                        pq.Enqueue((curX, curY),
+                            Math.Max(dis[x, y], Math.Abs(heights[curX][curY] - heights[x][y])));
+                        dis[curX, curY] = Math.Min(dis[curX, curY], 
+                            Math.Max(dis[x, y], Math.Abs(heights[curX][curY] - heights[x][y])));
+                    }
+                }
+            }
+            return dis[n - 1, m - 1];
         }
 
     }
