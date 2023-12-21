@@ -7571,25 +7571,21 @@ namespace Algorithm {
         }
 
         public static IList<IList<int>> KSmallestPairs(int[] nums1, int[] nums2, int k) {
-            long count = Math.Min(k, (long)nums1.Length * nums2.Length);
-            if (count == 1) {
-                return new List<IList<int>>() { new List<int>() { nums1[0] + nums2[0] } };
+            PriorityQueue<(int, int), int> pq = new();
+            for (int i = 0; i < nums1.Length; i++) {
+                pq.Enqueue((i, 0), nums1[i] + nums2[0]);
             }
-            PriorityQueue<(int, int), int> heap = new();
-            HashSet<(int, int)> set = new() { (0, 0) };
+            int cnt = 0;
             List<IList<int>> res = new();
-            heap.Enqueue((0, 0), nums1[0] + nums2[0]);
-            while (res.Count < count) {
-                var tmp = heap.Dequeue();
-                res.Add(new List<int>() { nums1[tmp.Item1], nums2[tmp.Item2] });
-                (int, int) p1 = (tmp.Item1 + 1, tmp.Item2);
-                if (p1.Item1 < nums1.Length && set.Add(p1)) {
-                    heap.Enqueue(p1, nums1[p1.Item1] + nums2[p1.Item2]);
+            while (cnt < k) {
+                var tmp = pq.Dequeue();
+                int x = tmp.Item1;
+                int y = tmp.Item2;
+                res.Add(new int[] { nums1[x], nums2[y] });
+                if (y + 1 < nums2.Length) {
+                    pq.Enqueue((x, y + 1), nums1[x] + nums2[y + 1]);
                 }
-                (int, int) p2 = (tmp.Item1, tmp.Item2 + 1);
-                if (p2.Item2 < nums2.Length && set.Add(p2)) {
-                    heap.Enqueue(p2, nums1[p2.Item1] + nums2[p2.Item2]);
-                }
+                cnt++;
             }
             return res;
         }

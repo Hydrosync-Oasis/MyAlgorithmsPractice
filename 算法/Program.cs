@@ -12,12 +12,7 @@ namespace Algorithm {
 
 
             //Test();
-            var res3 = new CountIntervals();
-            res3.Add(2, 3);
-            res3.Add(7, 10);
-            Console.WriteLine(res3.Count());
-            res3.Add(5, 8);
-            Console.WriteLine(res3.Count());
+            var res3 = Exercises.MinDeletionSize(["nsdddsys", "symhyzzy", "dykqxsjm"]);
             // Exercises.MinimumEffortPath([[1,2,3],[3,8,4],[5,3,5]]);
             sw.Stop();
             Console.WriteLine(res3);

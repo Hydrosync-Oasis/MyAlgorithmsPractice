@@ -994,13 +994,65 @@ namespace Algorithm {
                     if (curX >= 0 && curY >= 0 && curX < n && curY < m) {
                         pq.Enqueue((curX, curY),
                             Math.Max(dis[x, y], Math.Abs(heights[curX][curY] - heights[x][y])));
-                        dis[curX, curY] = Math.Min(dis[curX, curY], 
+                        dis[curX, curY] = Math.Min(dis[curX, curY],
                             Math.Max(dis[x, y], Math.Abs(heights[curX][curY] - heights[x][y])));
                     }
                 }
             }
             return dis[n - 1, m - 1];
         }
+
+        public static int MinDeletionSize(string[] strs) {
+            List<(int l, int r)>[] bucket = new List<(int l, int r)>[strs[0].Length];
+            int lastLV = -1;
+            int res = 0;
+            f(0);
+            return res;
+
+            void f(int lv) {
+                if (lv == strs[0].Length) {
+                    return;
+                }
+
+                List<(int l, int r)> list = new();
+                bool flag = true;
+                List<(int l, int r)> cur;
+                cur = new() { (0, strs.Length - 1) };
+                if (lastLV != -1) {
+                    cur = bucket[lastLV];
+                }
+                for (int i = 0; cur != null && i < cur.Count && flag; i++) {
+                    int l = cur[i].l;
+                    int r = cur[i].r;
+                    for (int j = l; j < r; j++) {
+                        if (strs[j][lv] > strs[j + 1][lv]) {
+                            flag = false;
+                            res++;
+                            break;
+                        }
+                    }
+                    if (flag) {
+                        // 分组循环
+                        int cur1 = l, cur2 = l;
+                        while (cur2 <= r) {
+                            while (cur2 <= r && strs[cur2][lv] == strs[cur1][lv]) {
+                                cur2++;
+                            }
+                            if (cur1 != cur2 - 1)
+                                list.Add((cur1, cur2 - 1));
+                            cur1 = cur2;
+                        }
+                        bucket[lv] = list;
+                    }
+
+                }
+
+                if (flag)
+                    lastLV = lv;
+                f(lv + 1);
+            }
+        }
+
 
     }
 }
