@@ -1,8 +1,10 @@
 ﻿using ServiceStack;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
+using System.Reflection.Metadata;
 using System.Reflection.Metadata.Ecma335;
 using System.Security.AccessControl;
 using System.Text;
@@ -1053,6 +1055,154 @@ namespace Algorithm {
             }
         }
 
+        public static long MaximumSumOfHeights(IList<int> maxHeights) {
+            Stack<int> st = new();
+            int n = maxHeights.Count;
+            long[] right = new long[n];
+            Array.Fill(right, n);
+            for (int i = 0; i < n; i++) {
+                while (st.Count > 0 && maxHeights[st.Peek()] > maxHeights[i]) {
+                    right[st.Pop()] = i;
+                }
+                st.Push(i);
+            }
 
+            st.Clear();
+            long[] left = new long[n];
+            Array.Fill(left, -1);
+            for (int i = n - 1; i >= 0; i--) {
+                while (st.Count > 0 && maxHeights[st.Peek()] > maxHeights[i]) {
+                    left[st.Pop()] = i;
+                }
+                st.Push(i);
+            }
+
+            long[] dp1 = new long[n];
+            long[] dp2 = new long[n];
+            dp1[0] = maxHeights[0];
+            for (int i = 1; i < n; i++) {
+                if (maxHeights[i] > maxHeights[i - 1]) {
+                    dp1[i] = dp1[i - 1] + maxHeights[i];
+                } else {
+                    dp1[i] += (i - left[i]) * maxHeights[i];
+                    dp1[i] += left[i] == -1 ? 0 : dp1[left[i]];
+                }
+            }
+            dp2[^1] = maxHeights[^1];
+            for (int i = n - 2; i >= 0; i--) {
+                if (maxHeights[i] > maxHeights[i + 1]) {
+                    dp2[i] = maxHeights[i] + dp2[i + 1];
+                } else {
+                    dp2[i] += maxHeights[i] * (right[i] - i);
+                    dp2[i] += right[i] == n ? 0 : dp2[right[i]];
+                }
+            }
+            long res = 0;
+            for (int i = 0; i < n; i++) {
+                res = Math.Max(res, dp1[i] + dp2[i] - maxHeights[i]);
+            }
+            return res;
+
+        }
+
+        public static bool IsEscapePossible(int[][] blocked, int[] source, int[] target) {
+            int len = blocked.Length;
+            int[] x = new int[len + 2];
+            int[] y = new int[len + 2];
+            for (int i = 0; i < len; i++) {
+                x[i] = blocked[i][0];
+                y[i] = blocked[i][1];
+            }
+            // 存放出发点目标点
+            x[^1] = source[0];
+            x[^2] = target[0];
+            y[^1] = source[1];
+            y[^2] = target[1];
+
+            Array.Sort(x);
+            Array.Sort(y);
+            int m, n;// grid size
+            int cnt = 0; // 计数器
+            Dictionary<int, int> dict = new() {
+                [x[0]] = cnt++,
+            };
+            int last = x[0];
+            for (int i = 1; i < len + 2; i++) {
+                if (x[i] - last == 1) {
+                    dict[x[i]] = cnt++;
+                    last = x[i];
+                } else if (x[i] == last) {
+                    // nothing
+                } else {
+                    cnt++;
+                    dict[x[i]] = cnt++;
+                    last = x[i];
+                }
+            }
+            int sx = dict[source[0]];
+            int tx = dict[target[0]];
+            int max = 0; // 检查是否含有1e6-1
+            int xMin = int.MaxValue;
+            for (int i = 0; i < blocked.Length; i++) {
+                max = Math.Max(max, blocked[i][0]);
+                xMin = Math.Min(xMin, blocked[i][0]);
+                blocked[i][0] = dict[blocked[i][0]];
+            }
+            m = max == 999999 ? cnt : cnt + 1;
+
+            cnt = 0;
+            dict[y[0]] = cnt++;
+            last = y[0];
+            for (int i = 1; i < len + 2; i++) {
+                if (y[i] - last == 1) {
+                    dict[y[i]] = cnt++;
+                    last = y[i];
+                } else if (y[i] == last) {
+                    // nothing        
+                } else {
+                    cnt++;
+                    dict[y[i]] = cnt++;
+                    last = y[i];
+                }
+            }
+
+            int sy = dict[source[1]];
+            int ty = dict[target[1]];
+            max = 0;
+            int yMin = int.MaxValue;
+            for (int i = 0; i < len; i++) {
+                max = Math.Max(max, blocked[i][1]);
+                yMin = Math.Min(xMin, blocked[i][1]);
+                blocked[i][1] = dict[blocked[i][1]];
+            }
+            n = max == 999999 ? cnt : cnt + 1;
+
+            HashSet<(int, int)> set = new();
+            for (int i = 0; i < blocked.Length; i++) {
+                set.Add((blocked[i][0], blocked[i][1]));
+            }
+            bool[,] vis = new bool[m + 2, n + 2];
+            Queue<(int x, int y)> que = new();
+            int[][] dire = new int[][] { new int[] { 1, 0 }, new int[] { -1, 0 }, new int[] { 0, 1 }, new int[] { 0, -1 } };
+            que.Enqueue((sx, sy));
+            while (que.Count > 0) {
+                var tmp = que.Dequeue();
+                if (tmp == (tx, ty)) {
+                    return true;
+                }
+                for (int i = 0; i < dire.Length; i++) {
+                    int curX = dire[i][0] + tmp.x;
+                    int curY = dire[i][1] + tmp.y;
+                    if (curX >= (xMin > 0 ? -1 : 0) && curX < m && curY >= (yMin > 0 ? -1 : 0)
+                        && curY < n && !vis[curX + 1, curY + 1] && !set.Contains((curX, curY))
+                        ) {
+                        que.Enqueue((curX, curY));
+                        vis[curX + 1, curY + 1] = true;
+                    }
+                }
+            }
+
+            return false;
+        }
     }
 }
