@@ -1204,5 +1204,46 @@ namespace Algorithm {
 
             return false;
         }
+
+        public static int MinStoneSum(int[] piles, int k) {
+            PriorityQueue<int, int> pq = new();
+            for (int i = 0; i < piles.Length; i++) {
+                pq.Enqueue(i, -piles[i]);
+            }
+
+            int cnt = 0;
+            int sum = piles.Sum();
+            while (cnt < k) {
+                int tmp = pq.Dequeue();
+                if ((piles[tmp] >> 1) == 0) {
+                    break;
+                }
+                sum -= piles[tmp] >> 1;
+                piles[tmp] -= piles[tmp] >> 1;
+                pq.Enqueue(tmp, -piles[tmp]);
+                cnt++;
+            }
+            return sum;
+        }
+
+        public static long MinimumPerimeter(long neededApples) {
+            int l = 0, r = 70000;
+            // f f t t 
+            while (l < r) {
+                int m = (r + l) >> 1;
+                if (f(m) >= neededApples) {
+                    r = m;
+                } else {
+                    l = m + 1;
+                }
+            }
+            return l << 3;
+
+            // formular
+            long f(int n) {
+                return 4 * (long)n * (n + 1) * (n + 1) - 2 * n * (n + 1);
+            }
+        }
+
     }
 }
