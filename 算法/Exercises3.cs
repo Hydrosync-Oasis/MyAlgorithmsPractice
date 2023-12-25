@@ -1245,5 +1245,30 @@ namespace Algorithm {
             }
         }
 
+        public static int[] FullBloomFlowers(int[][] flowers, int[] people) {
+            List<(int, int)> vals = new();
+            for (int i = 0; i < flowers.Length; i++) {
+                vals.Add((flowers[i][0], 1));
+                vals.Add((flowers[i][1] + 1, -1));
+            }
+            vals.Sort((a, b) => a.Item1.CompareTo(b.Item1));
+
+            PriorityQueue<int, int> pq = new();
+            for (int i = 0; i < people.Length; i++) {
+                pq.Enqueue(i, people[i]);
+            }
+            int d = 0;
+            int cur = 0;
+            int[] res = new int[people.Length];
+            while (pq.Count > 0) {
+                var tmp = pq.Dequeue();
+                while (cur < vals.Count && people[tmp] >= vals[cur].Item1) {
+                    d += vals[cur].Item2;
+                    cur++;
+                }
+                res[tmp] = d;
+            }
+            return res;
+        }
     }
 }

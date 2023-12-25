@@ -10,7 +10,7 @@ namespace Algorithm {
             //Exercises.ReverseStack(st);
             Stopwatch sw = Stopwatch.StartNew();
             //Test();
-            var res3 = Exercises.MinStoneSum([4,3,6,7], 3);
+            var res3 = Exercises.FullBloomFlowers([[1, 10], [3, 3]], [3, 3, 2]);
             // Exercises.MinimumEffortPath([[1,2,3],[3,8,4],[5,3,5]]);
             sw.Stop();
             Console.WriteLine(res3);
