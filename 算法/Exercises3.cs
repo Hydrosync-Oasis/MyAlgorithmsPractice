@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Reflection.Metadata;
 using System.Reflection.Metadata.Ecma335;
+using System.Runtime.CompilerServices;
 using System.Security.AccessControl;
 using System.Text;
 using System.Threading.Tasks;
@@ -1270,5 +1271,399 @@ namespace Algorithm {
             }
             return res;
         }
+
+        public static bool CircularArrayLoop(int[] nums) {
+            HashSet<int> vis = new();
+            HashSet<int> seen = new();
+            // 先找正数
+            int n = nums.Length;
+            for (int i = 0; i < n; i++) {
+                seen.Clear();
+                if (nums[i] < 0) {
+                    continue;
+                }
+                if (!vis.Add(i)) {
+                    continue;
+                }
+                int nxt = i;
+                while (true) {
+                    nxt = (nxt + nums[nxt]) % n;
+                    if (nums[nxt] > 0) {
+                        if (!seen.Add(nxt)) {
+                            if (seen.Count > 1 && nums[nxt] != n) {
+                                return true;
+                            } else {
+                                break;
+                            }
+                        }
+                    } else {
+                        // > 0
+                        break;
+                    }
+                }
+            }
+
+            vis.Clear();
+            for (int i = 0; i < n; i++) {
+                seen.Clear();
+                if (nums[i] > 0) {
+                    continue;
+                }
+                if (!vis.Add(i)) {
+                    continue;
+                }
+                int nxt = i;
+                while (true) {
+                    nxt = (-nums[nxt] * n + nxt + nums[nxt]) % n;
+                    if (nums[nxt] < 0) {
+                        if (!seen.Add(nxt)) {
+                            if (seen.Count > 1 && -nums[nxt] != n) {
+                                return true;
+                            } else {
+                                break;
+                            }
+                        }
+                    } else {
+                        // > 0
+                        break;
+                    }
+                }
+            }
+            return false;
+        }
+
+        public static int MinimumDeviation(int[] nums) {
+            SortedDictionary<int, int> tree = new();
+            for (int i = 0; i < nums.Length; i++) {
+                int x = nums[i];
+                if (x % 2 == 1) { x <<= 1; }
+
+                tree.TryAdd(x, 0);
+                tree[x]++;
+            }
+            int res = tree.Keys.Last() - tree.Keys.First();
+            while (true) {
+                int max = tree.Keys.Last();
+                if (max % 2 == 1) {
+                    break;
+                }
+                tree[max]--;
+                if (tree[max] == 0)
+                    tree.Remove(max);
+                max >>= 1;
+                tree.TryAdd(max, 0);
+                tree[max]++;
+
+                res = Math.Min(tree.Keys.Last() - tree.Keys.First(), res);
+            }
+            return res;
+        }
+
+        public static long MakeSimilar(int[] nums, int[] target) {
+            Array.Sort(nums);
+            Array.Sort(target);
+            List<int> oddNums = new();
+            List<int> evenNums = new();
+            List<int> oddTar = new();
+            List<int> evenTar = new();
+            int n = nums.Length;
+
+            for (int i = 0; i < n; i++) {
+                if (nums[i] % 2 == 1) {
+                    oddNums.Add(nums[i]);
+                } else {
+                    evenNums.Add(nums[i]);
+                }
+
+                if (target[i] % 2 == 1) {
+                    oddTar.Add(target[i]);
+                } else {
+                    evenTar.Add(target[i]);
+                }
+            }
+
+            long res = 0;
+            for (int i = 0; i < oddNums.Count; i++) {
+                res += Math.Abs(oddNums[i] - oddTar[i]) / 2;
+            }
+            for (int i = 0; i < evenNums.Count; i++) {
+                res += Math.Abs(evenNums[i] - evenTar[i]) / 2;
+            }
+            return res / 2;
+
+        }
+
+        public static ListNode? DeleteDuplicates2(ListNode head) {
+            if (head is null || head.next is null) {
+                return head;
+            }
+
+            ListNode cur1 = head;
+            ListNode? cur2 = head;
+            while (true) {
+                while (cur2 is not null && cur2.val == cur1.val) {
+                    cur2 = cur2.next;
+                }
+                cur1.next = cur2;
+                if (cur2 is null) {
+                    break;
+                }
+                cur1 = cur1.next!;
+                cur2 = cur2.next;
+            }
+            return head;
+        }
+
+        public static int MaximumRows(int[][] matrix, int numSelect) {
+            int[] nums = new int[matrix.Length];
+            for (int i = 0; i < matrix.Length; i++) {
+                for (int j = 0; j < matrix[i].Length; j++) {
+                    nums[i] |= matrix[i][j] << (matrix[i].Length - j - 1);
+                }
+            }
+            int res = 0;
+            int cnt = 1 << matrix[0].Length;
+            for (int i = 0; i < cnt; i++) {
+                int tmp = i;
+                int bitc = 0;
+                while (tmp > 0) {
+                    if (tmp % 2 == 1) {
+                        bitc++;
+                    }
+                    tmp >>= 1;
+                }
+                if (bitc != numSelect) {
+                    continue;
+                }
+                int ans = 0;
+                for (int j = 0; j < nums.Length; j++) {
+                    if ((i | nums[j]) == i) {
+                        ans++;
+                    }
+                }
+                res = Math.Max(ans, res);
+            }
+
+            return res;
+        }
+
+        public static int Count(string num1, string num2, int min_sum, int max_sum) {
+            num1 = num1.PadLeft(num2.Length, '0');
+            long res = 0;
+            const int MOD = 1000000007;
+            int[,,,] map = new int[num1.Length + 1, num1.Length * 9, 2, 2];
+            for (int i = 0; i < map.GetLength(0); i++) {
+                for (int j = 0; j < map.GetLength(1); j++) {
+                    for (int k = 0; k < 2; k++) {
+                        for (int m = 0; m < 2; m++) {
+                            map[i, j, k, m] = -1;
+                        }
+                    }
+                }
+            }
+
+            // 计算首位等于num1
+            res = f(1, num1[0] - '0', false, num1[0] < num2[0]) % MOD;
+            for (int i = num1[0] + 1; i < num2[0]; i++) {
+                res = (res + f(1, i - '0', true, true)) % MOD;
+            }
+            if (num1[0] != num2[0]) {
+                res = (res + f(1, num2[0] - '0', num1[0] < num2[0], false)) % MOD;
+            }
+            return (int)res;
+
+
+            // 第d位开始计算，前面的数位和是sum，前d-1位是否严格大于num1，前d-1位是否严格小于num2
+            long f(int d, int sum, bool greater, bool less) {
+                long ans = 0;
+                if (d > num1.Length) {
+                    return ans;
+                } else if (d == num1.Length) {
+                    if (sum >= min_sum && sum <= max_sum) {
+                        return 1;
+                    } else {
+                        return 0;
+                    }
+                }
+                if (map[d, sum, greater ? 1 : 0, less ? 1 : 0] != -1) {
+                    return map[d, sum, greater ? 1 : 0, less ? 1 : 0];
+                }
+
+                if (!greater && !less) {
+                    // 前d-1位正好完全等于num1和num2的前d-1位
+                    ans += f(d + 1, sum + (num1[d] - '0'), false, num1[d] < num2[d]);
+                    for (int i = num1[d] + 1; i < num2[d]; i++) {
+                        ans = (ans + f(d + 1, sum + i - '0', true, true)) % MOD;
+                    }
+                    if (num1[d] != num2[d]) {
+                        ans = (ans + f(d + 1, sum + (num2[d] - '0'), num1[d] < num2[d], false)) % MOD;
+                    }
+                } else if (!greater && less) {
+                    // 前d-1位小于num2，但和num1贴边
+                    ans += f(d + 1, sum + (num1[d] - '0'), false, true);
+                    for (int i = num1[d] + 1; i <= '9'; i++) {
+                        ans = (ans + f(d + 1, sum + i - '0', true, true)) % MOD;
+                    }
+                } else if (greater && !less) {
+                    // 前d-1位严格大于num1，但和less贴边了
+                    for (int i = '0'; i < num2[d]; i++) {
+                        ans = (ans + f(d + 1, sum + i - '0', true, true)) % MOD;
+                    }
+                    ans = (ans + f(d + 1, sum + num2[d] - '0', true, false)) % MOD;
+                } else {
+                    // 没有任何限制
+                    for (int i = '0'; i <= '9'; i++) {
+                        ans = (ans + f(d + 1, sum + i - '0', true, true)) % MOD;
+                    }
+                }
+
+                return map[d, sum, greater ? 1 : 0, less ? 1 : 0] = (int)ans;
+            }
+        }
+
+        public static int MinTaps(int n, int[] ranges) {
+            int[] left = new int[ranges.Length];
+            int[] right = new int[ranges.Length];
+            int choose = 0; // 选择后能扩展到的最大的右边界
+            int res = 0;
+            for (int v = 0; v < ranges.Length; v++) {
+                left[v] = -ranges[v] + v;
+                right[v] = ranges[v] + v;
+            }
+
+            Array.Sort(left, right);
+            int maxV = 0; // 目前的最大值
+            int maxI = -1;// 目前的最大索引
+            int i = 0, j = 0;
+            while (j < left.Length && choose < n) {
+
+                while (j < left.Length && left[j] <= choose) {
+                    if (right[j] > maxV) {
+                        maxV = right[j];
+                        maxI = j;
+                    }
+                    j++;
+                }
+                res++;
+                if (choose == maxV) {
+                    break;
+                }
+                choose = maxV;
+                i = j;
+            }
+            if (choose < n) {
+                return -1;
+            }
+            return res;
+        }
+
+        public static bool CanConvert(string str1, string str2) {
+            if (str1.SequenceEqual(str2)) {
+                return true;
+            }
+            int[] map = new int[26];
+            Array.Fill(map, -1);
+            for (int i = 0; i < str1.Length; i++) {
+                if (map[str1[i] - 'a'] != -1 && map[str1[i] - 'a'] != str2[i]) {
+                    return false;
+                }
+                map[str1[i] - 'a'] = str2[i];
+            }
+            int kind = 0;
+            Array.Fill(map, -1);
+            for (int i = 0; i < str2.Length; i++) {
+                map[str2[i] - 'a'] = 0;
+            }
+
+            for (int i = 0; i < map.Length; i++) {
+                if (map[i] != -1) {
+                    kind++;
+                }
+            }
+            return kind < 26;
+        }
+
+        public static long MaximumSumOfHeights2(IList<int> maxHeights) {
+            // 枚举峰顶
+            int n = maxHeights.Count;
+            long res = 0;
+            for (int i = 0; i < n; i++) {
+                long tmp = 0;
+                tmp += maxHeights[i];
+                int last = maxHeights[i];
+                for (int j = i + 1; j < n; j++) {
+                    tmp += last = Math.Min(last, maxHeights[j]);
+                }
+                last = maxHeights[i];
+                for (int j = i - 1; j >= 0; j--) {
+                    tmp += last = Math.Min(last, maxHeights[j]);
+                }
+                res = Math.Max(res, tmp);
+            }
+            return res;
+        }
+
+        public static double MaxAverageRatio(int[][] classes, int extraStudents) {
+            PriorityQueue<int, double> pq = new();
+            for (int i = 0; i < classes.Length; i++) {
+                pq.Enqueue(i, -diff(classes[i]));
+            }
+            while (extraStudents > 0) {
+                int tmp = pq.Dequeue();
+                classes[tmp][0]++;
+                classes[tmp][1]++;
+                pq.Enqueue(tmp, -diff(classes[tmp]));
+                extraStudents--;
+            }
+            double res = 0;
+            for (int i = 0; i < classes.Length; i++) {
+                res += (double)classes[i][0] / classes[i][1];
+            }
+            return res / classes.Length;
+
+            static double diff(int[] classes) {
+                return (double)(classes[1] - classes[0]) / (classes[1] * (classes[1] + 1));
+            }
+        }
+
+        public static double MincostToHireWorkers(int[] quality, int[] wage, int k) {
+            int n = quality.Length;
+            (int qua, int wage)[] staff = new (int, int)[n];
+            for (int i = 0; i < n; i++) {
+                staff[i] = (quality[i], wage[i]);
+            }
+            Array.Sort(staff, (a, b) => (1.0 * a.Item1 / a.Item2).CompareTo(1.0 * b.Item1 / b.Item2));
+            PriorityQueue<int, int> pq = new();
+            for (int i = 1; i < n; i++) {
+                pq.Enqueue(i, staff[i].qua);
+            }
+            int remainSum = 0; // 其他工人的工资quality的和
+            HashSet<int> set = new(); // 记录其他工人前k-1名的序号
+            for (int i = 0; i < k - 1; i++) {
+                remainSum += staff[pq.Peek()].qua;
+                set.Add(pq.Dequeue());
+            }
+
+            double res = int.MaxValue;
+            for (int i = 0; i <= n - k; i++) {
+                if (set.Contains(i)) {
+                    // 更新剩余工人的分数
+                    remainSum -= staff[i].qua;
+                    while (pq.Count > 0 && pq.Peek() <= i) {
+                        pq.Dequeue();
+                    }
+                    if (pq.Count == 0) {
+                        break;
+                    }
+                    int tmp = pq.Dequeue();
+                    remainSum += staff[tmp].qua;
+                    set.Add(tmp);
+                    set.Remove(i);
+                }
+                res = Math.Min(res, staff[i].wage + remainSum * 1.0 * staff[i].wage / staff[i].qua);
+            }
+            return res;
+        }
+
     }
 }

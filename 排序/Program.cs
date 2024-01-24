@@ -6,15 +6,15 @@ namespace 排序 {
     internal class Program {
         static void Main(string[] args) {
             Stopwatch stopwatch = new();
-            var arr = ArraySort.GenerateOrderlyInts(1, 200);
+            var arr = ArraySort.GenerateOrderlyInts(1, 8000000);
             //new int[] { 4, 1, 1, 2, 2 };
             //var arr = new long[] { 1, 4, 5, 1, 4, 9, 8, 1, 0 };
             ArraySort.ShuffleArr(ref arr);
             var backup = arr.ToArray();
-            ArraySort<int> example = new(arr, ArraySort<int>.VisualMode.Bar);
+            ArraySort<int> example = new(arr, ArraySort<int>.VisualMode.None);
             //Console.WriteLine(example.BinarySearch(82));
             stopwatch.Start();
-            example.Sort(ArraySort<int>.SortMethod.BinaryInsert);
+            example.Sort(ArraySort<int>.SortMethod.QuickSort);
             //Console.WriteLine(example.IsSorted());
             stopwatch.Stop();
             TimeSpan time1 = stopwatch.Elapsed;

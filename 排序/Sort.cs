@@ -60,7 +60,7 @@ namespace 排序 {
             //    return true;
             //}
             for (int i = 0; i < arr.Length - 1; i++) {
-                if (!IsLess(arr[i], arr[i + 1])) {
+                if (!IsLeq(arr[i], arr[i + 1])) {
                     if (needException) {
                         throw new Exception("排序方法错误在第" + i);
                     }
@@ -70,7 +70,7 @@ namespace 排序 {
             return true;
         }
 
-        private static bool IsLess(T a, T b) => a.CompareTo(b) <= 0;
+        private static bool IsLeq(T a, T b) => a.CompareTo(b) <= 0;
 
         int left, top;
 
@@ -125,7 +125,7 @@ namespace 排序 {
         private void BubbleSort() {
             for (int i = 0; i < arr.Length; i++) {
                 for (int j = 0; j < arr.Length - i - 1; j++) {
-                    if (!IsLess(arr[j], arr[j + 1])) {
+                    if (!IsLeq(arr[j], arr[j + 1])) {
                         (arr[j], arr[j + 1]) = (arr[j + 1], arr[j]);
                         { Visualization(arr, 1); }
                     }
@@ -139,8 +139,8 @@ namespace 排序 {
                 int min = i - 1;
                 int max = arr.Length - i;
                 for (int j = i - 1; j <= arr.Length - i; j++) {
-                    if (IsLess(arr[max], arr[j])) { max = j; }
-                    if (IsLess(arr[j], arr[min])) { min = j; }
+                    if (IsLeq(arr[max], arr[j])) { max = j; }
+                    if (IsLeq(arr[j], arr[min])) { min = j; }
                 }
                 if (min == arr.Length - i && max == i - 1) {
                     (arr[min], arr[max]) = (arr[max], arr[min]);
@@ -163,7 +163,7 @@ namespace 排序 {
             for (int i = left + 1; i <= right; i++) { //前i个元素有序
                 int j = i;
                 T wannaMoveElement = arr[i];
-                while (j >= left + 1 && !IsLess(arr[j - 1], wannaMoveElement)) {
+                while (j >= left + 1 && !IsLeq(arr[j - 1], wannaMoveElement)) {
                     arr[j] = arr[j - 1];
                     j--;
                     Visualization(arr);
@@ -177,7 +177,7 @@ namespace 排序 {
         private void BinaryInsertSort() {
             //在前面有序部分中二分查找较大的数
             for (int i = 1; i < arr.Length; i++) {
-                if (IsLess(arr[i], arr[i - 1])) {
+                if (IsLeq(arr[i], arr[i - 1])) {
                     int index = BinarySearch(arr[i], 0, i - 1);
                     T wannaMove = arr[i];
                     for (int j = i - 1; j >= index; j--) {
@@ -200,7 +200,7 @@ namespace 排序 {
                         //产生了序列0 * 4 + j, 1 * 4 + j, 2 * 4 + j, ...
                         int k = i;
                         while ((k - 1) * gap + j >= 0
-                            && IsLess(arr[k * gap + j], arr[(k - 1) * gap + j])) {
+                            && IsLeq(arr[k * gap + j], arr[(k - 1) * gap + j])) {
                             (arr[k * gap + j], arr[(k - 1) * gap + j])
                                 = (arr[(k - 1) * gap + j], arr[k * gap + j]);
                             k--;
@@ -220,7 +220,7 @@ namespace 排序 {
             //2
             for (int count = 1; count <= arr.Length - 1; count++) {
                 for (int i = 0; i < arr.Length - count; i++) {
-                    if (!IsLess(arr[0], arr[1])) {
+                    if (!IsLeq(arr[0], arr[1])) {
                         (arr[0], arr[1]) = (arr[1], arr[0]);
                     }
                     MoveToLast(0, arr);
@@ -250,8 +250,8 @@ namespace 排序 {
                 int left = (i << 1) + 1;    //正序==自顶向下方法，随着进行，深度和宽度都增大，复杂度为线性对数
                 while (left < arr.Length) {
                     int right = left + 1;
-                    int largest = right < arr.Length && IsLess(arr[left], arr[right]) ? right : left;
-                    if (IsLess(arr[largest], arr[idx])) {
+                    int largest = right < arr.Length && IsLeq(arr[left], arr[right]) ? right : left;
+                    if (IsLeq(arr[largest], arr[idx])) {
                         break;
                     }
                     (arr[idx], arr[largest]) = (arr[largest], arr[idx]);
@@ -270,8 +270,8 @@ namespace 排序 {
                 while ((idx << 1) + 1 < size) {
                     int left = (idx << 1) + 1;
                     int right = left + 1;
-                    int largestIdx = (right < size && IsLess(arr[left], arr[right])) ? right : left;
-                    if (IsLess(arr[largestIdx], arr[idx])) {
+                    int largestIdx = (right < size && IsLeq(arr[left], arr[right])) ? right : left;
+                    if (IsLeq(arr[largestIdx], arr[idx])) {
                         break;
                     } else {
                         (arr[idx], arr[largestIdx]) = (arr[largestIdx], arr[idx]);
@@ -321,7 +321,7 @@ namespace 排序 {
             if (end - index1 <= 15) {
                 InsertSort(index1, end);
             } else {
-                if (IsLess(arr[index2 - 1], arr[index2])) {
+                if (IsLeq(arr[index2 - 1], arr[index2])) {
                     return;
                 }
                 int cur1 = index1, cur2 = index2;
@@ -331,7 +331,7 @@ namespace 排序 {
                         res.Add(arr[cur2++]);
                     } else if (cur2 > end) {
                         res.Add(arr[cur1++]);
-                    } else if (IsLess(arr[cur1], arr[cur2])) {
+                    } else if (IsLeq(arr[cur1], arr[cur2])) {
                         res.Add(arr[cur1++]);
                     } else {
                         res.Add(arr[cur2++]);
@@ -370,16 +370,20 @@ namespace 排序 {
             int baseIdx = ran.Next(left, right);
             (arr[left], arr[baseIdx]) = (arr[baseIdx], arr[left]);
             T val = arr[left];//基准值
-            int cur1 = left + 1;
+            int cur1 = left;
             int cur2 = right;
-            while (true) {
-                while (cur1 <= cur2 && IsLess(arr[cur1], val)) { cur1++; }
-                while (cur1 <= cur2 && IsLess(val, arr[cur2])) { cur2--; }
-                if (cur1 > cur2) { break; }//[left + 1..cur1)都小于基准值arr[left]         (cur2..right]都大于基准值
-                (arr[cur1], arr[cur2]) = (arr[cur2], arr[cur1]);
+            int hole = left;
+            while (cur1 != cur2) {
+                while (cur2 != hole && !IsLeq(arr[cur2], val)) { cur2--; }
+                arr[hole] = arr[cur2];
+                hole = cur2;
+                while (cur1 != hole && IsLeq(arr[cur1], val)) { cur1++; }
+                arr[hole] = arr[cur1];
+                hole = cur1; 
+
                 Visualization(arr);
             }
-            int cur = cur1 - 1;//cur1 - 1是小于基准值的最后一位
+            arr[hole] = val;
 
             #region 另一种方法
             //for (int i = left + 1; i < cur; i++) {
@@ -391,9 +395,7 @@ namespace 排序 {
             //}
             //if (!IsLess(arr[cur], val)) { cur--; }//最后一次交换后仍然还是比val大
             #endregion
-            (arr[cur], arr[left]) = (arr[left], arr[cur]);
-            Visualization(arr);
-            return cur;
+            return hole;
         }
 
         private (int, int) NetherLand(int left, int right) {
@@ -404,7 +406,7 @@ namespace 排序 {
             int sep2 = right + 1;//[sep2..]都大于val
             int i = left + 1;//[sep1 + 1 .. i - 1]等于val
             while (i != sep2) {
-                if (!IsLess(val, arr[i])) {
+                if (!IsLeq(val, arr[i])) {
                     sep1++;
                     (arr[i], arr[sep1]) = (arr[sep1], arr[i]);
                     i++;
@@ -467,13 +469,17 @@ namespace 排序 {
         }
 
         private void Visualization(T[] values, int sleepTime = 1) {
-            Visualization((long[])Convert.ChangeType(values, typeof(long[])), sleepTime);
-        }
-
-        private void Visualization(long[] values, int sleepTime = 1) {
             if (visualization == VisualMode.None) {
                 return;
             }
+            List<long> ls = [];
+            for (int i = 0; i < values.Length; i++) {
+                ls.Add((long)Convert.ChangeType(values[i], typeof(long)));
+            }
+            Visualization(ls.ToArray(), sleepTime);
+        }
+
+        private void Visualization(long[] values, int sleepTime = 1) {
             Console.SetCursorPosition(left, top);
             if (visualization == VisualMode.Num) {
                 Console.WriteLine(this);

@@ -2586,6 +2586,15 @@ namespace Algorithm {
             }
         }
 
+        // public static int[] AddNegabinary(int[] arr1, int[] arr2) {
+        //     int n = arr1.Length, m = arr2.Length;
+        //     int[] res = new int[n + m + 1];
+        //     for (int i = res.Length - 1; i >= 0; i--) {
+
+        //     }
+        // }
+
+
         public static int NumTilePossibilities(string tiles) {
             var chosen = choose(tiles, 0);
             HashSet<string> res = new();

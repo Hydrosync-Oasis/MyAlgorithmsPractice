@@ -10,7 +10,7 @@ namespace Algorithm {
             //Exercises.ReverseStack(st);
             Stopwatch sw = Stopwatch.StartNew();
             //Test();
-            var res3 = Exercises.FullBloomFlowers([[1, 10], [3, 3]], [3, 3, 2]);
+            var res3 = Exercises.MincostToHireWorkers([14, 56, 59, 89, 39, 26, 86, 76, 3, 36], [90, 217, 301, 202, 294, 445, 473, 245, 415, 487], 2);
             // Exercises.MinimumEffortPath([[1,2,3],[3,8,4],[5,3,5]]);
             sw.Stop();
             Console.WriteLine(res3);
@@ -195,27 +195,27 @@ namespace Algorithm {
             //        throw new Exception();
             //    }
             //}
-            List<int> arg = new();
-            List<int> arg2 = new();
-            Random ran = new();
-            for (int j = 0; j < 5000000; j++) {
-                arg.Add(1);
-                arg2.Add(1);
-                for (int i = 0; i <= 10; i++) {
-                    arg.Add(ran.Next(0, 2));
-                    arg2.Add(ran.Next(0, 2));
-                }
-                arg.Add(ran.Next(2, 4));
-                arg.Add(ran.Next(2, 4));
-                var res = Exercises.AddNegabinary(arg.ToArray(), arg2.ToArray());
-                foreach (var item in res) {
-                    if (item < 0 || item >= 2) {
-                        throw new Exception();
-                    }
-                }
-                arg.Clear();
-                arg2.Clear();
-            }
+            // List<int> arg = new();
+            // List<int> arg2 = new();
+            // Random ran = new();
+            // for (int j = 0; j < 5000000; j++) {
+            //     arg.Add(1);
+            //     arg2.Add(1);
+            //     for (int i = 0; i <= 10; i++) {
+            //         arg.Add(ran.Next(0, 2));
+            //         arg2.Add(ran.Next(0, 2));
+            //     }
+            //     arg.Add(ran.Next(2, 4));
+            //     arg.Add(ran.Next(2, 4));
+            //     var res = Exercises.AddNegabinary(arg.ToArray(), arg2.ToArray());
+            //     foreach (var item in res) {
+            //         if (item < 0 || item >= 2) {
+            //             throw new Exception();
+            //         }
+            //     }
+            //     arg.Clear();
+            //     arg2.Clear();
+            // }
         }
 
         public static void Gen() {
