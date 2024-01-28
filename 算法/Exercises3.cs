@@ -1665,5 +1665,55 @@ namespace Algorithm {
             return res;
         }
 
+        public static bool CanMeasureWater(int jug1Capacity, int jug2Capacity, int targetCapacity) {
+            if (jug1Capacity == jug2Capacity) {
+                return targetCapacity == jug1Capacity;
+            }
+            if (jug1Capacity == targetCapacity || jug2Capacity == targetCapacity) {
+                return true;
+            }
+            int max = Math.Max(jug2Capacity, jug1Capacity);
+            int min = Math.Min(jug2Capacity, jug1Capacity);
+            bool[] vis = new bool[max + min + 1];
+            Queue<int> que = new();
+            que.Enqueue(max - min);
+            vis[max] = vis[min] = vis[max - min] = true;
+            while (que.Count > 0) {
+                var tmp = que.Dequeue();
+                if (tmp == targetCapacity) {
+                    return true;
+                }
+
+                if (max - tmp > 0 && min - (max - tmp) > 0) {
+                    if (!vis[min - (max - tmp)]) {
+                        vis[min - (max - tmp)] = true;
+                        que.Enqueue(min - (max - tmp));
+                    }
+                }
+                if (min - tmp > 0 && max - (min - tmp) > 0) {
+                    if (!vis[max - (min - tmp)]) {
+                        vis[max - (min - tmp)] = true;
+                        que.Enqueue(max - (min - tmp));
+                    }
+                }
+
+                if (tmp < max && tmp - min > 0 && !vis[tmp - min]) {
+                    vis[tmp - min] = true;
+                    que.Enqueue(tmp - min);
+                }
+
+                if (tmp + min < vis.Length && !vis[tmp + min]) {
+                    vis[tmp + min] = true;
+                    que.Enqueue(tmp + min);
+                }
+                if (tmp + max < vis.Length && !vis[tmp + max]) {
+                    vis[tmp + max] = true;
+                    que.Enqueue(tmp + max);
+                }
+            }
+
+            return false;
+        }
+
     }
 }

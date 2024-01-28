@@ -10,7 +10,7 @@ namespace Algorithm {
             //Exercises.ReverseStack(st);
             Stopwatch sw = Stopwatch.StartNew();
             //Test();
-            var res3 = Exercises.MincostToHireWorkers([14, 56, 59, 89, 39, 26, 86, 76, 3, 36], [90, 217, 301, 202, 294, 445, 473, 245, 415, 487], 2);
+            var res3 = Exercises.CanMeasureWater(104693, 104701, 324244);
             // Exercises.MinimumEffortPath([[1,2,3],[3,8,4],[5,3,5]]);
             sw.Stop();
             Console.WriteLine(res3);
