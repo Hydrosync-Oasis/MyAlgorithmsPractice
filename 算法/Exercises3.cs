@@ -1715,5 +1715,50 @@ namespace Algorithm {
             return false;
         }
 
+        public static void WiggleSort(int[] nums) {
+            int n = nums.Length;
+            n = (n + 1) / 2 * 2;
+            for (int i = 0; i < n - 1; i += 2) {
+                if (get(i) > get(i + 1)) {
+                    if (i - 1 >= 0 && get(i + 1) > get(i - 1)) {
+                        swap(i, i + 1);
+                        swap(i, i - 1);
+                    } else {
+                        swap(i, i + 1);
+                    }
+                } else {
+                    if (i > 1 && get(i) > get(i - 1)) {
+                        swap(i, i - 1);
+                    }
+                }
+            }
+            int get(int i) {
+                return i >= nums.Length ? int.MaxValue : nums[i];
+            }
+
+
+            void swap(int i, int j) {
+                (nums[i], nums[j]) = (nums[j], nums[i]);
+            }
+        }
+
+        public static int MajorityElement(int[] nums) {
+            int cnt = 0;
+            int pos = -1;
+            for (int i = 0; i < nums.Length; i++) {
+                if (pos >= 0 && nums[pos] == nums[i]) {
+                    cnt++;
+                } else {
+                    if (cnt > 0) {
+                        cnt--;
+                    } else {
+                        pos = i;
+                        cnt = 1;
+                    }
+                }
+            }
+            return nums[pos];
+        }
+
     }
 }

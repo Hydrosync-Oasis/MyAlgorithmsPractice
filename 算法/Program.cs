@@ -9,8 +9,9 @@ namespace Algorithm {
             //Stack<int> st = new(new int[] { 1, 2, 3, 4, 5 });
             //Exercises.ReverseStack(st);
             Stopwatch sw = Stopwatch.StartNew();
-            //Test();
-            var res3 = Exercises.CanMeasureWater(104693, 104701, 324244);
+            // Test();
+            var res3 =
+            Exercises.MajorityElement2([2, 1, 1, 3, 1, 4, 5, 6]);
             // Exercises.MinimumEffortPath([[1,2,3],[3,8,4],[5,3,5]]);
             sw.Stop();
             Console.WriteLine(res3);
@@ -80,13 +81,44 @@ namespace Algorithm {
         }
 
         static void Test() {
-            int a = 1;
-            for (int i = 0; i < 100000; i++) {
-                for (int j = 0; j < 100000; j++) {
-                    a++;
+            int n = 100;
+            int[][] tree = new int[n + 1][];
+            int m = 50;
+            Random ran = new();
+            List<int> res1 = [];
+            List<int> res2 = [];
+            tree[0] = [0, 0];
+            for (int i = 1; i <= n; i++) {
+                int[,] dp = new int[200, 200];
+                for (int j = 1; j <= n; j++) {
+                    tree[j] = [ran.Next(1, 100), ran.Next(1, 100)];
                 }
+                Array.Sort(tree, (a, b) => a[1].CompareTo(b[1]));
+
+                res1.Add(Compute(dp));
+                res2.Add(calc());
+
             }
-            Console.WriteLine(a);
+            Console.WriteLine("done");
+
+
+            int Compute(int[,] dp) {
+
+                for (int i = 1; i <= n; i++) {
+                    for (int j = 1; j <= m; j++) {
+                        dp[i, j] = Math.Max(dp[i - 1, j], dp[i - 1, j - 1] + tree[i][0] + tree[i][1] * (j - 1));
+                    }
+                }
+                return dp[n, m];
+            }
+
+            int calc() {
+                int res = 0;
+                for (int i = n; i > n - m; i--) {
+                    res += tree[i][0] + tree[i][1] * (i - n + m - 1);
+                }
+                return res;
+            }
         }
 
         public static int MinOperations(int[] nums1, int[] nums2) {
