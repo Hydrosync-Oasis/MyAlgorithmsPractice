@@ -1,4 +1,5 @@
 ﻿using ServiceStack;
+using ServiceStack.Text.Common;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -1758,6 +1759,274 @@ namespace Algorithm {
                 }
             }
             return nums[pos];
+        }
+
+        public static long IncremovableSubarrayCount(int[] nums) {
+            int n = nums.Length;
+            int a;
+            // [0..a)
+            for (a = 1; a < n && nums[a] > nums[a - 1]; a++) { }
+            int b;
+            // (b..n-1]
+            for (b = n - 2; b >= 0 && nums[b + 1] > nums[b]; b--) { }
+            long res = 0;
+            if (a == n && b == -1) {
+                return (1 + (long)n) * n / 2;
+            }
+            res += a + n - b - 1 + 1;
+            int cur1 = 0, cur2 = b + 1;
+            while (cur1 < a && cur2 < n) {
+                if (nums[cur2] > nums[cur1]) {
+                    res += n - cur2;
+                    cur1++;
+                } else {
+                    cur2++;
+                }
+            }
+
+            return res;
+        }
+
+        public static int CountPairs(IList<IList<int>> coordinates, int k) {
+            // 对于每一个点，遍历x的异或值的可能情况，确定是否存在y这样的异或值
+            Dictionary<int, Dictionary<int, int>> dict = new(); // key是x坐标，value是y坐标和频数
+            for (int i = 0; i < coordinates.Count; i++) {
+                if (!dict.ContainsKey(coordinates[i][0])) {
+                    dict.Add(coordinates[i][0], new());
+                    dict[coordinates[i][0]].Add(coordinates[i][1], 0);
+                }
+                dict[coordinates[i][0]][coordinates[i][1]]++;
+            }
+
+            int res = 0;
+            for (int i = 0; i < coordinates.Count; i++) {
+                for (int j = 0; j <= k; j++) {
+                    if (!dict.ContainsKey(j ^ coordinates[i][0])) {
+                        continue;
+                    }
+
+                }
+            }
+            throw new NotImplementedException();
+            return 0;
+        }
+
+        public static int StoneGameVI(int[] aliceValues, int[] bobValues) {
+            int n = aliceValues.Length;
+            int[] index = new int[n];
+            for (int i = 0; i < n; i++) {
+                index[i] = i;
+            }
+            Array.Sort(index, (a, b) => (aliceValues[b] + bobValues[b]).CompareTo(aliceValues[a] + bobValues[a]));
+            int diff = 0;
+            for (int i = 0; i < n; i++) {
+                if (i % 2 == 0) {
+                    diff += aliceValues[index[i]];
+                } else {
+                    diff -= bobValues[index[i]];
+                }
+            }
+            return Math.Sign(diff);
+        }
+
+        public static int MinGroupsForValidAssignment(int[] nums) {
+            Dictionary<int, int> dict = new();
+            int n = nums.Length;
+            for (int i = 0; i < n; i++) {
+                if (!dict.ContainsKey(nums[i])) {
+                    dict[nums[i]] = 0;
+                }
+                dict[nums[i]]++;
+            }
+
+            int min = n;
+            foreach (var item in dict) {
+                min = Math.Min(min, item.Value);
+            }
+
+            int res = int.MaxValue;
+            for (int i = 1; i <= min; i++) {
+                int tmp = 0;
+                // i, i+1
+                foreach (var item in dict) {
+                    int val = calc(item.Value, i);
+                    if (val == -1) {
+                        tmp = -1;
+                        break;
+                    }
+                    tmp += val;
+                }
+                if (tmp > 0) {
+                    res = Math.Min(res, tmp);
+                }
+            }
+            return res;
+
+            int calc(int sum, int m) {
+                for (int i = sum / (m + 1); i >= 0; i--) {
+                    if ((sum - i) % m == 0) {
+                        return (sum - i) / m;
+                    }
+                }
+                return -1;
+            }
+        }
+
+        public static int StoneGameVII(int[] stones) {
+            int n = stones.Length;
+            int[] pre = new int[n];
+            pre[0] = stones[0];
+            for (int i = 1; i < n; i++) {
+                pre[i] = pre[i - 1] + stones[i];
+            }
+
+            int a = first(0, n - 1);
+            int b = last(0, n - 1);
+            return a - b;
+
+            int sum(int l, int r) {
+                return pre[r] - (l == 0 ? 0 : pre[l - 1]);
+            }
+
+            int first(int l, int r) {
+                if (r - l == 1) {
+                    return Math.Max(stones[l], stones[r]);
+                }
+                if (l == r) {
+                    return 0;
+                }
+
+                // 计算剩余石子是[l, r]的时候，先手取最多取多少
+                // 取左边或者右边
+                int res;
+                res = sum(l + 1, r)
+                    + last(l + 1, r);
+                res = Math.Max(res,
+                    sum(l, r - 1)
+                    + last(l, r - 1)
+                    );
+                return res;
+            }
+
+            int last(int l, int r) {
+                if (r - l == 1) {
+                    return 0;
+                }
+                if (l == r) {
+                    return 0;
+                }
+
+                // 计算剩余石子是[l, r]的时候，后手取多少
+                // 有先手限制
+                int res;
+
+                if (sum(l + 1, r) + last(l + 1, r) >=
+                    sum(l, r - 1) + last(l, r - 1)) {
+                    res = first(l + 1, r);
+                } else {
+                    res = first(l, r - 1);
+                }
+
+                return res;
+            }
+        }
+
+        public static int MinimumTimeToInitialState(string word, int k) {
+            int[] next = BuildNextArray(word);
+            HashSet<int> len = new();
+            int n = word.Length;
+            if (n == k) {
+                return 1;
+            }
+            int j = next[^1] - 1;
+            len.Add(j);
+            while (j >= 0 && next[j] >= 1) {
+                j = next[j] - 1;
+                len.Add(j);
+            }
+            int res = 0;
+            for (int i = n - k; i >= 0; i -= k) {
+                res++;
+                if (len.Contains(i - 1)) {
+                    return res;
+                }
+            }
+            return (word.Length + k - 1) / k;
+
+            throw new NotImplementedException();
+
+            int[] BuildNextArray(string s) {
+                int[] next = new int[s.Length];
+                int j = 0;
+
+                for (int i = 1; i < s.Length; i++) {
+                    while (j > 0 && s[i] != s[j]) {
+                        j = next[j - 1];
+                    }
+
+                    if (s[i] == s[j]) {
+                        j++;
+                    }
+
+                    next[i] = j;
+                }
+
+                return next;
+            }
+        }
+
+        public static int MaxResult(int[] nums, int k) {
+            PriorityQueue<int, int> pq = new();
+            int n = nums.Length;
+            int[] dp = new int[n];
+            dp[^1] = nums[^1];
+            pq.Enqueue(n - 1, -dp[^1]);
+            for (int i = n - 2; i >= 0; i--) {
+                while (pq.Count > 0 && pq.Peek() - i > k) {
+                    pq.Dequeue();
+                }
+                var tmp = pq.Peek();
+                dp[i] = nums[i] + dp[tmp];
+                pq.Enqueue(i, -dp[i]);
+            }
+            return dp[0];
+        }
+
+        public static int MaxDistance(IList<IList<int>> arrays) {
+            int n = arrays.Count;
+            for (int i = 0; i < n; i++) {
+                arrays[i] = new int[] { arrays[i][0], arrays[i][^1] };
+            }
+
+            int min = arrays[0][0];
+            int max = arrays[0][1];
+            int res = int.MinValue;
+            for (int i = 1; i < n; i++) {
+                res = Math.Max(res, Math.Abs(arrays[i][1] - min));
+                min = Math.Min(min, arrays[i][0]);
+
+                res = Math.Max(res, Math.Abs(arrays[i][0] - max));
+                max = Math.Max(max, arrays[i][1]);
+            }
+
+            return res;
+        }
+
+        public static int ClosestToTarget(int[] arr, int target) {
+            int res = int.MaxValue;
+            int n = arr.Length;
+            for (int i = 0; i < n; i++) {
+                // 模板：修改arr的每一位，使arr[j]为j到i闭区间的所有值的按位与（交集）
+                int x = arr[i];
+                res = Math.Min(res, Math.Abs(x - target));
+                int j = i - 1;
+                while (j >= 0 && (arr[j] & x) != arr[j]) {
+                    arr[j] &= x;
+                    res = Math.Min(res, Math.Abs(arr[j] - target));
+                }
+            }
+
+            return res;
         }
 
     }

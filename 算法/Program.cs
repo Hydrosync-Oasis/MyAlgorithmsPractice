@@ -11,7 +11,9 @@ namespace Algorithm {
             Stopwatch sw = Stopwatch.StartNew();
             // Test();
             var res3 =
-            Exercises.MajorityElement2([2, 1, 1, 3, 1, 4, 5, 6]);
+            Exercises.MaxDistance([[1,2,3],
+ [4,5],
+ [1,2,3]]);
             // Exercises.MinimumEffortPath([[1,2,3],[3,8,4],[5,3,5]]);
             sw.Stop();
             Console.WriteLine(res3);
