@@ -5723,8 +5723,8 @@ namespace Algorithm {
 
         public static string SuffixToInfix(string s) {
             Stack<string> numSt = new();
-            string[] components = s.Split('_');
-            foreach (var item in components) {
+            string[] parts = s.Split('_');
+            foreach (var item in parts) {
                 if (int.TryParse(item, out _)) {
                     numSt.Push(item);
                 } else {

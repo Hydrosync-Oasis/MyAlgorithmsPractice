@@ -1,4 +1,5 @@
-﻿using ServiceStack;
+﻿using System.Reflection.Metadata.Ecma335;
+using ServiceStack;
 using System.Text;
 using 树;
 
@@ -1066,4 +1067,5 @@ namespace Algorithm {
             return tree.Query(1, N);
         }
     }
+
 }

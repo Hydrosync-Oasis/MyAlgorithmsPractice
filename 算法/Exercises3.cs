@@ -1,16 +1,8 @@
-﻿using ServiceStack;
-using ServiceStack.Text.Common;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Diagnostics;
-using System.Linq;
-using System.Reflection.Metadata;
-using System.Reflection.Metadata.Ecma335;
-using System.Runtime.CompilerServices;
-using System.Security.AccessControl;
+﻿using System.ComponentModel;
+using System.Numerics;
+using System.Reflection;
+using System.Runtime.InteropServices.ComTypes;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace Algorithm {
     internal static partial class Exercises {
@@ -1879,55 +1871,28 @@ namespace Algorithm {
             for (int i = 1; i < n; i++) {
                 pre[i] = pre[i - 1] + stones[i];
             }
+            Dictionary<(int, int), int> map = new();
 
-            int a = first(0, n - 1);
-            int b = last(0, n - 1);
-            return a - b;
+            int res = dfs(0, n - 1);
+
+            return res;
 
             int sum(int l, int r) {
                 return pre[r] - (l == 0 ? 0 : pre[l - 1]);
             }
 
-            int first(int l, int r) {
+            int dfs(int l, int r) {
+                // 最大化当前玩家减去对方玩家分数的差值，返回差值
                 if (r - l == 1) {
                     return Math.Max(stones[l], stones[r]);
                 }
-                if (l == r) {
-                    return 0;
+                if (map.ContainsKey((l, r))) {
+                    return map[(l, r)];
                 }
+                int res1 = -dfs(l + 1, r) + sum(l + 1, r);
+                int res2 = -dfs(l, r - 1) + sum(l, r - 1);
+                return map[(l, r)] = Math.Max(res1, res2);
 
-                // 计算剩余石子是[l, r]的时候，先手取最多取多少
-                // 取左边或者右边
-                int res;
-                res = sum(l + 1, r)
-                    + last(l + 1, r);
-                res = Math.Max(res,
-                    sum(l, r - 1)
-                    + last(l, r - 1)
-                    );
-                return res;
-            }
-
-            int last(int l, int r) {
-                if (r - l == 1) {
-                    return 0;
-                }
-                if (l == r) {
-                    return 0;
-                }
-
-                // 计算剩余石子是[l, r]的时候，后手取多少
-                // 有先手限制
-                int res;
-
-                if (sum(l + 1, r) + last(l + 1, r) >=
-                    sum(l, r - 1) + last(l, r - 1)) {
-                    res = first(l + 1, r);
-                } else {
-                    res = first(l, r - 1);
-                }
-
-                return res;
             }
         }
 
@@ -2028,6 +1993,1318 @@ namespace Algorithm {
 
             return res;
         }
+
+        public static bool PredictTheWinner(int[] nums) {
+            int n = nums.Length;
+            int[,] map = new int[n, n];
+            int sum = nums.Sum();
+            return dfs(0, n - 1, sum) * 2 >= sum;
+
+            int dfs(int l, int r, int sum) {
+                if (l == r) {
+                    return nums[l];
+                }
+                if (map[l, r] > 0) {
+                    return map[l, r];
+                }
+                int res1 = nums[l] + sum - dfs(l + 1, r, sum - nums[l]);
+                int res2 = nums[r] + sum - dfs(l, r - 1, sum - nums[r]);
+                return map[l, r] = Math.Max(res1, res2);
+            }
+        }
+
+        public static string StoneGameIII(int[] stoneValue) {
+            int n = stoneValue.Length;
+            int[] p = new int[n + 1];
+            int[] dp = new int[n];
+            Array.Fill(dp, int.MinValue);
+            for (int i = 0; i < n; i++) {
+                dp[i] = int.MinValue;
+            }
+            for (int i = 1; i < p.Length; i++) {
+                p[i] += p[i - 1];
+            }
+            int a = dfs(0);
+            if (a * 2 == p[^1]) {
+                return "Tie";
+            }
+            if (a * 2 > p[^1]) {
+                return "Alice";
+            }
+            return "Bob";
+
+            int sum(int l, int r) => p[r + 1] - p[l];
+
+            int dfs(int l) {
+                // [l..]的区间，先手能拿多少石子
+                if (l == n - 1) {
+                    return stoneValue[l];
+                }
+                if (dp[l] != int.MinValue) {
+                    return dp[l];
+                }
+
+                int res = int.MinValue;
+                for (int i = 1; i <= 3; i++) {
+                    int cur = 0;
+                    for (int j = 0; j < i && j + l < n; j++) {
+                        cur += stoneValue[j + l];
+                    }
+                    if (i + l < n) {
+                        cur += sum(i + l, n - 1) - dfs(i + l);
+                    }
+                    res = Math.Max(res, cur);
+                }
+                return dp[l] = res;
+            }
+        }
+
+        public static bool SumGame(string num) {
+            int cnt = num.Count((a) => a == '?');
+            int sumL = 0, sumR = 0;
+            int n = num.Length;
+            int cntL = 0, cntR = 0;
+            for (int i = 0; i < n / 2; i++) {
+                if (num[i] == '?') {
+                    cntL++;
+                } else {
+                    sumL += num[i] - '0';
+                }
+            }
+            cntR = cnt - cntL;
+            for (int i = n / 2; i < n; i++) {
+                if (num[i] != '?') {
+                    sumR += num[i] - '0';
+                }
+            }
+            bool first = true;
+            while (cnt-- > 0) {
+                if (first) {
+                    if (sumL > sumR || sumL == sumR && cntL > cntR) {
+                        if (cntL > 0) {
+                            cntL--;
+                            sumL += 9;
+                        } else {
+                            if (sumR + 9 > sumL) {
+                                sumR += 9;
+                            }
+                            cntR--;
+                        }
+                    } else {
+                        if (cntR > 0) {
+                            cntR--;
+                            sumR += 9;
+                        } else {
+                            if (sumL + 9 > sumR) {
+                                sumL += 9;
+                            }
+                            cntL--;
+                        }
+                    }
+                } else {
+                    if (sumL > sumR) {
+                        if (cntR > 0) {
+                            int add = Math.Min(9, sumL - sumR);
+                            sumR += add;
+                            cntR--;
+                        } else {
+                            return true;
+                        }
+                    } else {
+                        if (cntL > 0) {
+                            int add = Math.Min(9, sumR - sumL);
+                            sumL += add;
+                            cntL--;
+                        } else {
+                            return true;
+                        }
+                    }
+                }
+                first = !first;
+            }
+            return sumL != sumR;
+        }
+
+        public static TreeNode LowestCommonAncestor(TreeNode root, TreeNode p, TreeNode q) {
+            TreeNode? res = null;
+            contains(root);
+            return res!;
+
+            int contains(TreeNode? cur) {
+                if (cur is null) {
+                    return 0;
+                }
+                int a = contains(cur.left);
+                int b = contains(cur.right);
+                if ((cur == q || cur == p) && (a == 1 || b == 1)) {
+                    res = cur;
+                    return -1;
+                }
+                if (cur == p || cur == q) {
+                    return 1;
+                }
+                if (a == -1 || b == -1) {
+                    return -1;
+                }
+                if (a == 1 && b == 1) {
+                    res = cur;
+                    return 2;
+                }
+                return a + b;
+            }
+        }
+
+        public static int[][] BuildMatrix(int k, int[][] rowConditions, int[][] colConditions) {
+            int[] cols = new int[k + 1];
+            int[] rows = new int[k + 1];
+            List<int>[] graphCol = new List<int>[k + 1];
+            List<int>[] graphRow = new List<int>[k + 1];
+            for (int i = 0; i < graphCol.Length; i++) {
+                graphCol[i] = new();
+                graphRow[i] = new();
+            }
+            int[] inR = new int[k + 1];
+            int[] inC = new int[k + 1];
+            for (int i = 0; i < rowConditions.Length; i++) {
+                graphRow[rowConditions[i][0]].Add(rowConditions[i][1]);
+                inR[rowConditions[i][1]]++;
+            }
+            for (int i = 0; i < colConditions.Length; i++) {
+                graphCol[colConditions[i][0]].Add(colConditions[i][1]);
+                inC[colConditions[i][1]]++;
+            }
+            // 拓扑排序，邻接表记录的是下一个点
+            Queue<int> que = new();
+            for (int i = 1; i < inR.Length; i++) {
+                if (inR[i] == 0) {
+                    que.Enqueue(i);
+                }
+            }
+            if (que.Count == 0) {
+                return Array.Empty<int[]>();
+            }
+            int cnt = 0;
+            while (que.Count > 0) {
+                List<int> tmp = new();
+                while (que.Count > 0) {
+                    tmp.Add(que.Dequeue());
+                }
+                foreach (var item in tmp) {
+                    rows[item] = cnt;
+                    for (int i = 0; i < graphRow[item].Count; i++) {
+                        inR[graphRow[item][i]]--;
+                        if (inR[graphRow[item][i]] == 0) {
+                            que.Enqueue(graphRow[item][i]);
+                        }
+                    }
+                }
+                cnt++;
+            }
+            que.Clear();
+            cnt = 0;
+            for (int i = 1; i < inC.Length; i++) {
+                if (inC[i] == 0) {
+                    que.Enqueue(i);
+                }
+            }
+            if (que.Count == 0) {
+                return Array.Empty<int[]>();
+            }
+            while (que.Count > 0) {
+                List<int> tmp = new();
+                while (que.Count > 0) {
+                    tmp.Add(que.Dequeue());
+                }
+                foreach (var item in tmp) {
+                    cols[item] = cnt;
+                    for (int i = 0; i < graphCol[item].Count; i++) {
+                        inC[graphCol[item][i]]--;
+                        if (inC[graphCol[item][i]] == 0) {
+                            que.Enqueue(graphCol[item][i]);
+                        }
+                    }
+                    cnt++;
+                }
+            }
+            if (inC.Any((a) => a != 0) || inR.Any((a) => a != 0)) {
+                return Array.Empty<int[]>();
+            }
+            int[][] res = new int[k][];
+            for (int i = 0; i < k; i++) {
+                res[i] = new int[k];
+            }
+            for (int i = 1; i <= k; i++) {
+                res[rows[i]][cols[i]] = i;
+            }
+            return res;
+        }
+
+        public static int LenLongestFibSubseq(int[] arr) {
+            int n = arr.Length;
+            Dictionary<int, int> dict = new();
+            for (int i = 0; i < n; i++) {
+                dict[arr[i]] = i;
+            }
+            int[,] dp = new int[n, n];
+            // dp[first, second]
+            int res = 0;
+            for (int i = n - 2; i >= 0; i--) {
+                for (int j = i + 1; j < n; j++) {
+                    if (dict.TryGetValue(arr[i] + arr[j], out int idx)) {
+                        dp[i, j] = dp[j, idx] + 1;
+                    }
+                    dp[i, j] = Math.Max(2, dp[i, j]);
+                    res = Math.Max(res, dp[i, j]);
+                }
+            }
+            return res > 2 ? res : 0;
+        }
+
+        public static int MinOperations(string s1, string s2, int x) {
+            int n = s1.Length;
+            List<int> idx = new();
+            for (int i = 0; i < n; i++) {
+                if (s1[i] != s2[i]) {
+                    idx.Add(i);
+                }
+            }
+            if (idx.Count % 2 != 0) {
+                return -1;
+            }
+            int cur1 = 0, cur2 = 1;
+            int m = idx.Count;
+            List<List<int>> groups = new();
+
+            while (cur1 < m) {
+                groups.Add(new());
+                groups[^1].Add(idx[cur1]);
+                //bool flag = false;
+                while (cur2 < m && idx[cur2] - idx[cur2 - 1] <= x) {
+                    groups[^1].Add(idx[cur2]);
+                    cur2++;
+                    //flag = true;
+                }
+                cur1 = cur2;
+                cur2++;
+            }
+            int res = 0;
+            int odd = 0;
+            for (int i = 0; i < groups.Count; i++) {
+                if (groups[i].Count % 2 == 1) {
+                    odd++;
+                }
+                res += f(i);
+            }
+            res += odd / 2 * x;
+            return res;
+
+            int f(int idx) {
+                // 计算groups[idx]的值
+                int res = 0;
+                if (groups[idx].Count % 2 == 0) {
+                    for (int i = 0; i < groups[idx].Count - 1; i += 2) {
+                        res += groups[idx][i + 1] - groups[idx][i];
+                    }
+                    return res;
+                }
+
+                for (int i = 0; i < groups[idx].Count - 1; i++) {
+                    groups[idx][i] = groups[idx][i + 1] - groups[idx][i];
+                }
+                var x = groups[idx];
+                groups[idx].RemoveAt(x.Count - 1);
+                if (x.Count == 0) {
+                    return 0;
+                }
+                int[,] dp = new int[x.Count / 2, 2];
+                dp[0, 0] = x[0];
+                dp[0, 1] = x[1];
+                for (int i = 1; i < dp.GetLength(0); i++) {
+                    dp[i, 0] = dp[i - 1, 0] + x[i * 2];
+                    dp[i, 1] = Math.Min(dp[i - 1, 0] + x[i * 2 + 1], dp[i - 1, 1] + x[i * 2 + 1]);
+                }
+                return int.Min(dp[dp.GetLength(0) - 1, 1], dp[dp.GetLength(0) - 1, 0]);
+            }
+        }
+
+        public static int CountTriplets(int[] nums) {
+            Dictionary<int, int> dict = new();
+            int n = nums.Length;
+            for (int i = 0; i < n; i++) {
+                for (int j = 0; j < n; j++) {
+                    int x = nums[i] & nums[j];
+                    if (!dict.TryGetValue(x, out int value)) {
+                        value = 0;
+                        dict.Add(x, value);
+                    }
+                    dict[x] = ++value;
+                }
+            }
+            int res = 0;
+            for (int i = 0; i < n; i++) {
+                foreach (var j in dict.Keys) {
+                    if ((nums[i] & j) == 0) {
+                        res += dict[j];
+                    }
+                }
+            }
+            return res;
+        }
+
+        public static int MinIncrements(int n, int[] cost) {
+            int[] cost2 = new int[n + 1];
+            Array.Copy(cost, 0, cost2, 1, n);
+            int max = dfs(1);
+            int res = dfs2(1, max);
+            return res;
+
+            int dfs(int idx) {
+                // 返回从idx开始的最大路径和
+                if (idx > n) {
+                    return 0;
+                }
+                int res = 0;
+                int l = dfs(idx << 1);
+                int r = dfs((idx << 1) | 1);
+                res = Math.Max(l, r);
+                return res + cost2[idx];
+            }
+
+            int dfs2(int idx, int add) {
+                // 从idx出发，给所有路径增加add的最少操作
+                if (idx > n) {
+                    return 0;
+                }
+
+                int res = 0;
+                int max = dfs(idx);
+                // 获取左右路径的最大值
+                // 当前节点+=add-max
+
+                int l = dfs2(idx << 1, add - (cost2[idx] + (add - max)));
+                int r = dfs2(idx << 1 | 1, add - (cost2[idx] + (add - max)));
+                return l + r + add - max;
+            }
+        }
+
+        public static long MinIncrementOperations(int[] nums, int k) {
+            int n = nums.Length;
+            long[] dp = new long[n];
+            Array.Fill(dp, -1);
+            f(0);
+            f(1);
+            f(2);
+            return Math.Min(dp[0], Math.Min(dp[1], dp[2]));
+
+            long f(int startIdx) {
+                if (startIdx >= n) {
+                    return 0;
+                }
+                if (dp[startIdx] != -1) {
+                    return dp[startIdx];
+                }
+
+                long res = long.MaxValue;
+                // 改
+                int right = startIdx;
+                int greaterIdx = startIdx;
+                //int cnt = 0;
+                while (right < n) {
+                    if (nums[right] >= k) {
+                        greaterIdx = right;
+                    }
+                    if (right >= greaterIdx + 3) {
+                        break;
+                    }
+                    right++;
+                }
+
+                for (int i = greaterIdx + 1; i <= greaterIdx + 3; i++) {
+                    long has = Math.Max(0, -nums[startIdx] + k);
+                    has += f(i);
+                    res = Math.Min(res, has);
+                }
+                return dp[startIdx] = res;
+
+            }
+        }
+
+        public static int MinNonZeroProduct(int p) {
+            if (p == 1) {
+                return 1;
+            }
+            const int MOD = 10_0000_0007;
+            checked {
+
+                long cnt1 = ((1L << p) - 1) >> 1;
+                BigInteger remain = ((((BigInteger)1 << p) + 1) * (1L << (p - 1)) - (1L << p) - cnt1) / (cnt1 + 1);
+                return (int)((pow(remain, cnt1, MOD) * (remain + 1) % MOD) % MOD);
+            }
+
+            static long pow(BigInteger a, long b, long p) {
+                long result = 1;
+                a %= p;
+                while (b > 0) {
+                    if (b % 2 == 1)
+                        result = (long)((result * a) % p);
+                    b >>= 1;
+                    a = (a * a) % p;
+                }
+                return result;
+            }
+        }
+
+        public static bool IsValidSerialization(string preorder) {
+            List<string> stack = new();
+            string[] e = preorder.Split(',');
+            for (int i = 0; i < e.Length; i++) {
+                stack.Add(e[i]);
+                process();
+            }
+            return stack.Count == 1 && stack[0] == "#";
+
+            void process() {
+                if (stack[^1] == "#") {
+                    // 只检查井号，其他不用检查
+                    if (stack.Count > 2 && stack[^2] == "#" && stack[^3] != "#") {
+                        stack.RemoveRange(stack.Count - 3, 3);
+                        stack.Add("#");
+                        process();
+                    }
+                }
+            }
+        }
+
+        public static int CountKSubsequencesWithMaxBeauty(string s, int k) {
+            const int MOD = 1000000007;
+
+            int[] freq = new int[26];
+            for (int i = 0; i < s.Length; i++) {
+                freq[s[i] - 'a']++;
+            }
+            Array.Sort(freq, (a, b) => b.CompareTo(a));
+            if (freq.Count((i) => i != 0) < k) { return 0; }
+            int res = 1;
+            // 先找到第k-1个位置处有多少个连续的词频数
+
+            int lastIndex = -1;
+            int lastCnt = 0;
+            for (int i = 0; i < freq.Length; i++) {
+                if (freq[i] == freq[k - 1]) {
+                    lastIndex = i;
+                    break;
+                }
+            }
+            lastCnt = lastIndex;
+
+            int cnt;
+            if (k == freq.Length || freq[k - 1] != freq[k]) {
+                cnt = 0;
+                lastCnt = k;
+            } else {
+                cnt = freq.Count((i) => i == freq[k - 1]);
+                res = (int)((long)(res * Math.Pow(freq[k - 1], k - lastCnt)) % MOD * Combination(cnt, k - lastCnt) % MOD);
+            }
+            for (int i = 0; i < lastCnt; i++) {
+                res = (int)((long)res * freq[i] % MOD);
+            }
+
+            return res;
+
+
+
+            static int Combination(int n, int k) {
+                if (k > n)
+                    return 0;
+                if (k == 0 || k == n)
+                    return 1;
+
+                int[,] dp = new int[n + 1, k + 1];
+
+                // Initialize the table
+                for (int i = 0; i <= n; i++) {
+                    for (int j = 0; j <= Math.Min(i, k); j++) {
+                        // Base cases
+                        if (j == 0 || j == i)
+                            dp[i, j] = 1;
+                        else
+                            dp[i, j] = (dp[i - 1, j - 1] + dp[i - 1, j]) % MOD;
+                    }
+                }
+
+                return dp[n, k];
+            }
+        }
+
+        public static int MaxFrequency2(int[] nums, int k) {
+            Array.Sort(nums);
+            int l = 0, r = 0;
+            long curK = 0;
+            int res = 1;
+            while (true) {
+                r++;
+                if (r >= nums.Length) {
+                    break;
+                }
+
+                curK += ((long)nums[r] - nums[r - 1]) * (r - l);
+                while (curK > k) {
+                    l++;
+                    if (l > r) {
+                        break;
+                    }
+                    curK -= nums[r] - nums[l];
+                }
+                res = Math.Max(res, r - l + 1);
+            }
+
+            return res;
+        }
+
+        public static int MaximumLength(int[] nums, int k) {
+            int n = nums.Length;
+            int[,] dp = new int[n, k + 1];
+            for (int i = 0; i < n; i++) {
+                dp[i, 0] = 1;
+            }
+
+            for (int i = n - 2; i >= 0; i--) {
+                for (int j = 0; j <= k; j++) {
+                    for (int i1 = i + 1; i1 < n; i1++) {
+                        if (nums[i1] != nums[i] && j >= 1) {
+                            dp[i, j] = Math.Max(dp[i, j], dp[i1, j - 1] + 1);
+                        } else if (nums[i1] == nums[i]) {
+                            dp[i, j] = Math.Max(dp[i, j], dp[i1, j] + 1);
+                        }
+                    }
+
+                }
+                for (int l = 1; l <= k; l++) {
+                    dp[i, l] = Math.Max(dp[i, l - 1], dp[i, l]);
+                }
+            }
+
+            return dp[0, k];
+        }
+
+        public static bool[] IsArraySpecial(int[] nums, int[][] queries) {
+            int n = nums.Length;
+            int[] pre = new int[n];
+            int l, next = 0;
+            bool flag = false;
+            while ((l = next) < n) {
+                int r = l + 1;
+                while (r < n && nums[r] % 2 != nums[r - 1] % 2) {
+                    r++;
+                }
+
+                next = r--;
+
+                Array.Fill(pre, flag ? 1 : 3, l, r - l + 1);
+                flag = !flag;
+
+            }
+
+            for (int i = 1; i < n; i++) {
+                pre[i] += pre[i - 1];
+            }
+
+            bool[] res = new bool[queries.Length];
+            for (int i = 0; i < res.Length; i++) {
+                var x = queries[i];
+                int sum =
+                    pre[x[1]] - (x[0] != 0 ? pre[x[0] - 1] : 0);
+                res[i] = sum == x[1] - x[0] + 1 || sum == (x[1] - x[0] + 1) * 3;
+            }
+
+            return res;
+        }
+
+        public static long MinEnd(int n, int x) {
+            int digit = 1;
+            long n2 = n - 1;
+            while (digit <= x) {
+                if ((x & digit) != 0) {
+                    var remain = n2 & (digit - 1);
+                    n2 = ((n2 - remain) << 1) + remain;
+                }
+                digit <<= 1;
+            }
+
+            return n2 | x;
+        }
+
+        public static int Search2(int[] nums, int target) {
+            int n = nums.Length;
+            int l = -1, r = n - 1;
+            while (l < r) {
+                int m = (l + r + 1) >> 1;
+                if (nums[m] < nums[0]) {
+                    r = m - 1;
+                } else {
+                    l = m;
+                }
+            }
+
+            int res = -1;
+            Find(0, l);
+            Find(l + 1, n - 1);
+
+
+            return res;
+
+            void Find(int l, int r) {
+                // l = 0;
+                // r = right;
+                while (l <= r) {
+                    int m = (l + r) >> 1;
+                    if (nums[m] < target) {
+                        l = m + 1;
+                    } else if (nums[m] > target) {
+                        r = m - 1;
+                    } else {
+                        res = m;
+                        return;
+                    }
+                }
+            }
+
+        }
+
+        public static int MaxNumOfMarkedIndices(int[] nums) {
+            int n = nums.Length;
+            int res = 0;
+            Array.Sort(nums);
+
+            int last = n - 1;
+            for (int i = n - 2; i >= 0; i--) {
+                if (nums[last] >= (nums[i] << 1)) {
+                    last--;
+                    res += 2;
+                }
+            }
+
+            return Math.Min(n / 2 * 2, res);
+        }
+
+        public static int MaximumRobots(int[] chargeTimes, int[] runningCosts, long budget) {
+            int n = chargeTimes.Length;
+            // T T F F F
+            int l = -1, r = n;
+            while (l < r) {
+                int m = (l + r + 1) >> 1;
+                if (check(m)) {
+                    l = m;
+                } else {
+                    r = m - 1;
+                }
+            }
+
+            return l;
+
+
+            bool check(int k) {
+                if (k == 0) {
+                    return true;
+                }
+
+                LinkedList<int> que = new();
+                // 递减队列
+                long sum = 0;
+                for (int i = 0; i < k; i++) {
+                    push(que, i);
+                    sum += runningCosts[i];
+                }
+                for (int i = 0; i < n - k + 1; i++) {
+                    if (chargeTimes[que.First.Value] + k * sum <= budget) {
+                        return true;
+                    }
+
+                    if (i + k >= n) {
+                        return false;
+                    }
+                    push(que, i + k);
+                    sum -= runningCosts[i];
+                    sum += runningCosts[i + k];
+                    PopAndMax(que, i);
+                }
+
+                return false;
+            }
+
+            void push(LinkedList<int> que, int i) {
+                while (que.Count > 0 && chargeTimes[que.Last.Value] <= chargeTimes[i]) {
+                    que.RemoveLast();
+                }
+
+                que.AddLast(i);
+            }
+
+            int PopAndMax(LinkedList<int> que, int i) {
+                if (que.Count == 0) {
+                    throw new Exception();
+                }
+
+                if (que.First.Value == i) {
+                    var tmp = que.First.Value;
+                    que.RemoveFirst();
+                    return tmp;
+                } else {
+                    return que.First.Value;
+                }
+            }
+        }
+
+        public static string RemoveStars(string s) {
+            List<char> stack = new();
+            int top = 0;// 顶层的下一个元素的下标
+            int n = s.Length;
+            for (int i = 0; i < n; i++) {
+                var x = s[i];
+                if (x == '*') {
+                    top--;
+                } else {
+                    if (stack.Count <= top) {
+                        stack.Add(x);
+                    } else {
+                        stack[top] = x;
+                    }
+                    top++;
+                }
+            }
+
+            return string.Concat(stack[..top]);
+        }
+
+        public static int MinimizeSum(int[] nums) {
+            Array.Sort(nums);
+            return Math.Min(Math.Min(
+                    Math.Abs(nums[^1] - nums[2]), Math.Abs(nums[0] - nums[^3]))
+                , Math.Abs(nums[^2] - nums[1]));
+        }
+
+        public static int MaxOperations(string s) {
+            // 策略：每次都移动最左侧的1
+            int cnt = 0;
+            int res = 0;
+            for (int i = 0; i < s.Length; i++) {
+                if (s[i] == '1') {
+                    cnt++;
+                } else if (i > 0 && s[i - 1] == '1') {
+                    res += cnt;
+                }
+            }
+
+            return res;
+        }
+
+        public static int NumTilings(int n) {
+            int[,] dp = new int[n, 3];
+            // 0: 平整
+            // 1: 第一行凸出一块
+            // 2: 第二行凸出一块
+            dp[n - 1, 0] = 1;
+            dp[n - 1, 1] = dp[n - 1, 2] = 0;
+            const int MOD = 1000000007;
+            for (int i = n - 2; i >= 0; i--) {
+                // 填充两个横着的二连块
+                dp[i, 0] = (dp[i, 0] % MOD + (i + 2 < n ? dp[i + 2, 0] : 1) % MOD) % MOD;
+                // 填充一个横着的二连块
+                dp[i, 1] = (dp[i, 1] % MOD + (i + 1 < n ? dp[i + 1, 2] : 1) % MOD) % MOD;
+                dp[i, 2] = (dp[i, 2] % MOD + (i + 1 < n ? dp[i + 1, 1] : 1) % MOD) % MOD;
+                // 竖着填充一个二连块
+                dp[i, 0] = (dp[i, 0] % MOD + dp[i + 1, 0] % MOD) % MOD;
+                // 填充一个指向左下角的三连块
+                dp[i, 0] = (dp[i, 0] % MOD + (dp[i + 1, 2] % MOD)) % MOD;
+                // 填充一个指向左上角的三连块
+                dp[i, 0] = (dp[i, 0] % MOD + dp[i + 1, 1] % MOD) % MOD;
+                // 填充一个指向右上角、右下角的三连块
+                dp[i, 1] = (dp[i, 1] % MOD + (i + 2 < n ? dp[i + 2, 0] : 1)) % MOD;
+                dp[i, 2] = (dp[i, 2] % MOD + (i + 2 < n ? dp[i + 2, 0] : 1) % MOD) % MOD;
+            }
+            return dp[0, 0] % MOD;
+        }
+
+        public static double MinAreaFreeRect(int[][] points) {
+            double res = double.MaxValue;
+            HashSet<(int, int)> set = [];
+            int n = points.Length;
+            for (int i = 0; i < n; i++) {
+                set.Add((points[i][0], points[i][1]));
+            }
+
+            for (int i = 0; i < n; i++) {
+                for (int j = i + 1; j < n; j++) {
+                    for (int k = j + 1; k < n; k++) {
+                        var s = calcS(points[i], points[j], points[k]);
+                        if (s == -1) {
+                            continue;
+                        }
+                        res = Math.Min(res, s);
+                    }
+                }
+            }
+
+            return res == double.MaxValue ? 0 : res;
+
+
+            double calcS(int[] a, int[] b, int[] c) {
+                Vector2 ba = new([a[0] - b[0], a[1] - b[1]]);
+                Vector2 cb = new([b[0] - c[0], b[1] - c[1]]);
+                Vector2 ac = new([c[0] - a[0], c[1] - a[1]]);
+                if (Vector2.Dot(ba, cb) == 0) {
+                    var bc = Vector2.Multiply(-1, cb);
+                    int[] d = [a[0] + (int)bc[0], a[1] + (int)bc[1]];
+                    if (set.Contains((d[0], d[1]))) {
+                        return getLen(ba) * getLen(cb);
+                    }
+                } else if (Vector2.Dot(ba, ac) == 0) {
+                    int[] d = [b[0] + (int)ac[0], b[1] + (int)ac[1]];
+                    if (set.Contains((d[0], d[1]))) {
+                        return getLen(ba) * getLen(ac);
+                    }
+
+                } else if (Vector2.Dot(cb, ac) == 0) {
+                    int[] d = [a[0] + (int)cb[0], a[1] + (int)cb[1]];
+                    if (set.Contains((d[0], d[1]))) {
+                        return getLen(cb) * getLen(ac);
+                    }
+                }
+                return -1;
+
+            }
+
+            double getLen(Vector2 v) {
+                return Math.Sqrt(v[0] * (double)v[0] + v[1] * v[1]);
+            }
+        }
+
+        public static int[] FindRedundantConnection(int[][] edges) {
+            int n = edges.Length;
+            int[] inDegree = new int[n + 1];
+            List<int[]> candidates = [];
+
+            // 计算入度和出度
+            foreach (var edge in edges) {
+                inDegree[edge[1]]++;
+            }
+
+            for (int i = 0; i < n; i++) {
+                if (inDegree[edges[i][1]] == 2) {
+                    candidates.Add(edges[i]);
+                }
+            }
+            // 情况1：存在入度为2的节点
+            if (candidates.Count > 0) {
+                int[] edge1 = candidates[0];
+                int[] edge2 = candidates[1];
+                bool one = tryEdge(edge1);
+                bool two = tryEdge(edge2);
+                if (!one) {
+                    return edge2;
+                }
+
+                if (!two) {
+                    return edge1;
+                }
+
+                return edge2;
+            }
+
+            bool tryEdge(int[] e) {
+                int[] pa = new int[n + 1];
+                for (int i = 1; i <= n; i++) {
+                    pa[i] = i; // 重置并查集
+                }
+
+                foreach (int[] edge in edges) {
+                    if (edge[0] == e[0] && edge[1] == e[1]) {
+
+                    } else {
+                        Union(edge[0], edge[1]);
+                    }
+                }
+
+                if (Find(e[0]) == Find(e[1])) {
+                    return true;
+                }
+
+                return false;
+
+                int Find(int x) {
+                    if (pa[x] != x) {
+                        pa[x] = Find(pa[x]); // 路径压缩
+                    }
+                    return pa[x];
+                }
+
+                void Union(int x, int y) {
+                    pa[Find(x)] = Find(y);
+                }
+            }
+
+
+            // 情况2：不存在入度为2的节点，寻找环
+            var graph = new Dictionary<int, List<int>>();
+            foreach (var edge in edges) {
+                if (!graph.ContainsKey(edge[0])) {
+                    graph[edge[0]] = new List<int>();
+                }
+                graph[edge[0]].Add(edge[1]);
+            }
+
+            var visited = new bool[n + 1];
+            Array.Fill(visited, false);
+            var cycleEdges = new HashSet<(int, int)>();
+            foreach (var edge in edges.Reverse()) {
+                if (DetectCycle(edge[0], graph, [], visited, cycleEdges)) {
+                    break;
+                }
+            }
+            // 寻找最后一个出现的边
+            for (int i = n - 1; i >= 0; i--) {
+                if (cycleEdges.Contains((edges[i][0], edges[i][1]))) {
+                    return edges[i];
+                }
+            }
+
+
+
+            return [];
+
+            bool DetectCycle(int node, Dictionary<int, List<int>> graph, HashSet<int> path, bool[] visited, HashSet<(int, int)> cycleEdges) {
+                if (path.Contains(node))
+                    return true;
+                if (visited[node])
+                    return false;
+
+                visited[node] = true;
+                path.Add(node);
+
+                if (graph.ContainsKey(node)) {
+                    foreach (var neighbor in graph[node]) {
+                        cycleEdges.Add((node, neighbor));
+                        if (DetectCycle(neighbor, graph, path, visited, cycleEdges)) {
+                            return true;
+                        }
+                        cycleEdges.Remove((node, neighbor));
+                    }
+                }
+
+                path.Remove(node);
+                return false;
+            }
+        }
+
+        public static bool HasValidPath(char[][] grid) {
+            int w = grid.Length;
+            int h = grid[0].Length;
+
+            if ((w + h - 1) % 2 != 0) {
+                return false;
+            }
+            Dictionary<(int, int, int), bool> map = [];
+
+            return f(0, 0, 0);
+
+
+            bool f(int x, int y, int val) {
+                if (val > 0) {
+                    return false;
+                }
+                if (map.TryGetValue((x, y, val), out bool res)) {
+                    return res;
+                }
+                int cur;
+                if (grid[x][y] == '(') {
+                    cur = 1;
+                } else {
+                    cur = -1;
+                }
+
+                if (x == w - 1 && y == h - 1) {
+                    return val == (grid[x][y] == ')' ? -1 : 1);
+                }
+
+                if (check(x + 1, y)) {
+                    if (f(x + 1, y, val - cur)) {
+                        return map[(x,y,val)] = true;
+                    }
+                }
+
+                if (check(x, y + 1)) {
+                    if (f(x, y + 1, val - cur)) {
+                        return map[(x,y,val)] = true;
+                    }
+                }
+
+                return map[(x, y, val)] = false;
+            }
+
+            bool check(int x, int y) {
+                return x >= 0 && x < w && y >= 0 && y < h;
+            }
+        }
+
+        public static int MaxValueOfCoins(IList<IList<int>> piles, int k) {
+            int n = piles.Count;
+            Dictionary<(int, int), int> map = [];
+            return dfs(k, 0);
+
+            // 从第j个开始，选择k个
+            int dfs(int k, int j) {
+                if (j == n || k == 0) {
+                    return 0;
+                }
+
+                if (map.TryGetValue((k, j), out int res)) {
+                    return res;
+                }
+
+                int sum = 0;
+                int max = 0;
+                max = Math.Max(max, dfs(k, j + 1));
+                for (int i = 0; i < Math.Min(k, piles[j].Count); i++) {
+                    sum += piles[j][i];
+                    max = Math.Max(max, dfs(k - i - 1, j + 1) + sum);
+                }
+
+                return map[(k, j)] = max;
+            }
+        }
+        public static int FindLatestStep(int[] arr, int m) {
+            int n = arr.Length;
+            (int l, int r)[] lr = new (int, int)[n + 1];
+            Array.Fill(lr, (-1, -1));
+            int res = -1;
+            int j = 1;
+            foreach (int i in arr) {
+                lr[i] = (i, i);
+                if (i + 1 <= n && lr[i + 1].r != -1) {
+                    lr[i].r = lr[i + 1].r;
+                }
+
+                if (i > 1 && lr[i - 1].l != -1) {
+                    lr[i].l = lr[i - 1].l;
+                }
+
+                if (i + 1 <= n && lr[i + 1].r != -1) {
+                    // 合并
+                    if (lr[i + 1].r - lr[i + 1].l + 1 == m) {
+                        res = j - 1;
+                    }
+                    lr[lr[i + 1].r].l = lr[i].l;
+                }
+
+                if (i > 1 && lr[i - 1].l != -1) {
+                    // 合并
+                    if (lr[i - 1].r - lr[i - 1].l + 1 == m) {
+                        res = j - 1;
+                    }
+                    lr[lr[i - 1].l].r = lr[i].r;
+                }
+
+                if (lr[i].r - lr[i].l + 1 == m) {
+                    res = j;
+                }
+
+                j++;
+            }
+
+            return res;
+        }
+
+        public static int MaxDistance(string s, int k) {
+            // 贪心法
+            int x = 0, y = 0;
+            int n = s.Length;
+            int cur;
+            int res = 0;
+            for (int i = 0; i < s.Length; i++) {
+                char c = s[i];
+                switch (c) {
+                    case 'N':
+                        y++;
+                        break;
+                    case 'S':
+                        y--;
+                        break;
+                    case 'E':
+                        x++;
+                        break;
+                    case 'W':
+                        x--;
+                        break;
+                }
+
+                // 什么也不改时，当前的曼哈顿距离：
+                cur = Math.Abs(x) + Math.Abs(y);
+                // 在这个当前距离的基础上，可以进行k次更改，每更改一次就加2，即+2k；
+                // 但不能超过i+1步。
+                cur = Math.Min(i + 1, cur + 2 * k);
+                res = Math.Max(res, cur);
+            }
+
+            return res;
+        }
+
+        public static bool CanArrange(int[] arr, int k) {
+            for (int i = 0; i < arr.Length; i++) {
+                arr[i] %= k;
+                arr[i] = (arr[i] + k) % k;
+            }
+            Dictionary<int, int> freq = [];
+            for (int i = 0; i < arr.Length; i++) {
+                if (!freq.ContainsKey(arr[i])) {
+                    freq[arr[i]] = 0;
+                }
+
+                freq[arr[i]]++;
+            }
+
+            foreach (var i in freq.Keys) {
+                if (i != 0 && (!freq.ContainsKey(k - i) || freq[i] != freq[k - i])) {
+                    return false;
+                }
+            }
+
+            return !freq.ContainsKey(0) || freq[0] % 2 == 0;
+        }
+
+        public static int MinZeroArray(int[] nums, int[][] queries) {
+            int n = queries.Length;
+
+            // 二分查找的边界
+            int left = 0, right = n;
+
+            // 二分查找
+            while (left < right) {
+                int mid = (left + right) / 2;
+                // 检查前mid个查询是否能将nums变成零数组
+                if (CanZeroArray(nums, queries, mid)) {
+                    right = mid;  // 如果能变成零数组，尝试更小的k
+                } else {
+                    left = mid + 1;  // 否则尝试更大的k
+                }
+            }
+
+            // 判断最终结果
+            return CanZeroArray(nums, queries, left) ? left : -1;
+
+
+            static bool CanZeroArray(int[] nums, int[][] queries, int k) {
+                int m = nums.Length;
+                int[] d = new int[m + 1];  // 差分数组
+
+                // 处理前k个查询
+                for (int i = 0; i < k; i++) {
+                    int l = queries[i][0];
+                    int r = queries[i][1];
+                    int val = queries[i][2];
+
+                    d[l] += val;
+                    if (r + 1 < m)
+                        d[r + 1] -= val;
+                }
+
+                // 使用前缀和更新数组
+                int currentDiff = 0;
+                for (int i = 0; i < m; i++) {
+                    currentDiff += d[i];
+                    if (nums[i] - currentDiff > 0) {
+                        return false;  // 如果当前元素不能通过操作使其为零，则返回false
+                    }
+                }
+
+                return true;
+            }
+        }
+
+        public static int CountOfPairs(int[] nums) {
+            int n = nums.Length;
+            long sum = 0;
+            const int mod = 10_0000_0007;
+            Dictionary<(int, int), long> map = [];
+            for (int i = 0; i <= nums[0]; i++) {
+                var tmp = Dfs(0, i);
+                if (tmp != -1) {
+                    sum = (sum % mod + tmp % mod) % mod;
+                }
+            }
+
+            return (int)sum;
+
+            long Dfs(int start, int curNum) {
+                int curSum = nums[start];
+                if (curSum - curNum < 0) {
+                    return -1;
+                }
+
+                if (start == n - 1) {
+                    return 1;
+                }
+
+                if (map.TryGetValue((start, curNum), out var tmp)) {
+                    return tmp;
+                }
+
+                long res = 0;
+                // 枚举下一个
+                if (curNum > nums[start + 1]) {
+                    return -1;
+                }
+                for (int nextNum = curNum; nextNum <= nums[start + 1]; nextNum++) {
+                    // 检查是否递减
+                    var nextNum2 = nums[start + 1] - nextNum;
+                    if (nextNum2 > nums[start] - curNum) {
+                        continue;
+                    }
+                    var nextRes = Dfs(start + 1, nextNum);
+                    if (nextRes != -1) {
+                        res = (res % mod + nextRes % mod) % mod;
+                    }
+                }
+
+                return map[(start, curNum)] = res;
+            }
+        }
+
+        public static int MaxDistinctElements(int[] nums, int k) {
+            if (nums.Length <= 2 * k + 1)
+                return nums.Length;
+            Array.Sort(nums);
+            int a = -k; // 从-k开始上涨
+            int b = k; // 下降
+            int l = 0, r = nums.Length - 1;
+            HashSet<int> set = [];
+            while (l <= r) {
+                if (l == 0) {
+                    set.Add(nums[l] + a);
+                } else {
+                    a = Math.Min(Math.Max(-k, nums[l - 1] + a - nums[l] + 1), k); // 尽量贴边
+                    set.Add(nums[l] + a);
+                }
+
+                if (l == r) {
+                    break;
+                }
+
+                if (r == nums.Length - 1) {
+                    set.Add(nums[r] + b);
+                } else {
+                    b = Math.Max(Math.Min(k, nums[r + 1] + b - nums[r] - 1), -k); // 尽量贴边
+                    set.Add(nums[r] + b);
+                }
+                set.Add(nums[r] + b);
+
+
+                r--;
+                l++;
+            }
+
+            return set.Count;
+        }
+
 
     }
 }

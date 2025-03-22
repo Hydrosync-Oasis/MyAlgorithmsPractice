@@ -1,25 +1,17 @@
-﻿using System.Diagnostics;
+﻿using ServiceStack.Text;
+using System.Diagnostics;
+using System.Numerics;
 using System.Runtime.Serialization.Json;
 using System.Text;
 using System.Text.RegularExpressions;
+using 算法题目;
 
 namespace Algorithm {
     internal class Program {
         static void Main(string[] args) {
-            //Stack<int> st = new(new int[] { 1, 2, 3, 4, 5 });
-            //Exercises.ReverseStack(st);
-            Stopwatch sw = Stopwatch.StartNew();
-            // Test();
-            var res3 =
-            Exercises.MaxDistance([[1,2,3],
- [4,5],
- [1,2,3]]);
-            // Exercises.MinimumEffortPath([[1,2,3],[3,8,4],[5,3,5]]);
-            sw.Stop();
-            Console.WriteLine(res3);
-            //Check();
-            //Gen();
-            Console.WriteLine(sw.Elapsed);
+            var res =
+                Exercises.MaxDistinctElements([56, 56, 54, 54], 0);
+            Console.WriteLine(res);
         }
         static void Input() {
             string[] nm = Console.ReadLine().Split(' ');
@@ -39,91 +31,8 @@ namespace Algorithm {
 
             Console.WriteLine(result);
         }
-        static int[] GenArr(string path) {
-            string filePath = path; // 将 "path_to_your_file.txt" 替换为您的文件路径
-
-            try {
-                string content = File.ReadAllText(filePath);
-                int[] array = Parse1DArray(content);
-                return array;
-
-            } catch (Exception ex) {
-                Console.WriteLine("发生错误：" + ex.Message);
-            }
-            return null;
-        }
-
-
-        static int[][] Parse2DArray(string input) {
-            var pattern = @"\[([\d, \[\]-]*?)\]";
-            var matches = Regex.Matches(input, pattern);
-
-            var result = new List<int[]>();
-            foreach (Match match in matches) {
-                string matchContent = match.Groups[1].Value;
-                int[] row = Parse1DArray(matchContent);
-                result.Add(row);
-            }
-
-            return result.ToArray();
-        }
-
-        static int[] Parse1DArray(string input) {
-            var pattern = @"([-?\d]*)";
-            var matches = Regex.Matches(input, pattern);
-
-            var result = new List<int>();
-            foreach (Match match in matches) {
-                if (int.TryParse(match.Groups[1].Value, out int element)) {
-                    result.Add(element);
-                }
-            }
-
-            return result.ToArray();
-        }
-
-        static void Test() {
-            int n = 100;
-            int[][] tree = new int[n + 1][];
-            int m = 50;
-            Random ran = new();
-            List<int> res1 = [];
-            List<int> res2 = [];
-            tree[0] = [0, 0];
-            for (int i = 1; i <= n; i++) {
-                int[,] dp = new int[200, 200];
-                for (int j = 1; j <= n; j++) {
-                    tree[j] = [ran.Next(1, 100), ran.Next(1, 100)];
-                }
-                Array.Sort(tree, (a, b) => a[1].CompareTo(b[1]));
-
-                res1.Add(Compute(dp));
-                res2.Add(calc());
-
-            }
-            Console.WriteLine("done");
-
-
-            int Compute(int[,] dp) {
-
-                for (int i = 1; i <= n; i++) {
-                    for (int j = 1; j <= m; j++) {
-                        dp[i, j] = Math.Max(dp[i - 1, j], dp[i - 1, j - 1] + tree[i][0] + tree[i][1] * (j - 1));
-                    }
-                }
-                return dp[n, m];
-            }
-
-            int calc() {
-                int res = 0;
-                for (int i = n; i > n - m; i--) {
-                    res += tree[i][0] + tree[i][1] * (i - n + m - 1);
-                }
-                return res;
-            }
-        }
-
-        public static int MinOperations(int[] nums1, int[] nums2) {
+       
+    public static int MinOperations(int[] nums1, int[] nums2) {
             int n = nums1.Length, m = nums2.Length;
             if (6 * n < m || 6 * m < n) {
                 return -1;
