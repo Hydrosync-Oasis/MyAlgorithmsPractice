@@ -10,7 +10,7 @@ namespace Algorithm {
     internal class Program {
         static void Main(string[] args) {
             var res =
-                Exercises.MaxDistinctElements([56, 56, 54, 54], 0);
+                Exercises.MaxWeight([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]);
             Console.WriteLine(res);
         }
         static void Input() {

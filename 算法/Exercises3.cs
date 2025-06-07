@@ -3305,6 +3305,146 @@ namespace Algorithm {
             return set.Count;
         }
 
+        public static int MinDifference(int[] nums) {
+            int n = nums.Length;
+            if (n <= 4) {
+                return 0;
+            }
+            Array.Sort(nums);
+            int res = int.MaxValue;
+            for (int i = 0; i <= 3; i++) {
+                res = Math.Min(res, nums.Skip(i).Take(n - 3).Max() - nums.Skip(i).Take(n - 3).Min());
+            }
+
+            return res;
+        }
+
+        public static  long MaxWeight(int[] pizzas) {
+            Array.Sort(pizzas);
+            int n = pizzas.Length;
+            long res = 0;
+            for (int i = 0; i < (n / 4 + 1) / 2; i++) {
+                res += pizzas[^(i + 1)];
+            }
+
+            for (int i = 1; i <= n / 4 - (n / 4 + 1)/ 2; i++) {
+                res += pizzas[^((n / 4 + 1)/ 2 + 2 * i)];
+            }
+
+            return res;
+        }
+
+        public static int MinimumEffort(int[][] tasks) {
+            Array.Sort(tasks, (a, b) => {
+                int x = b[1] - b[0] - (a[1] - a[0]);
+                if (x != 0) {
+                    return x;
+                } else {
+                    return b[1] - a[1];
+                }
+            });
+
+            int initial = 0;
+            int cur = 0;
+            for (int i = 0; i < tasks.Length; i++) {
+                initial += Math.Max(0, tasks[i][1] - cur);
+                cur = tasks[i][1] - cur <= 0 ? cur - tasks[i][0] : tasks[i][1] - tasks[i][0];
+            }
+            return initial;
+        }
+
+        public static IList<string> GetWordsInLongestSubsequence(string[] words, int[] groups) {
+            int n = words.Length;
+            int[] dp = new int[n];
+            Array.Fill(dp, 1);
+            int[] map = new int[n];
+            Array.Fill(map, -1);
+            for (int i = 1; i < n; i++) {
+                for (int j = 0; j < i; j++) {
+                    if (groups[i] != groups[j] && IsValid(words[i], words[j])) {
+                        if (dp[j] + 1 >= dp[i]) {
+                            dp[i] = dp[j] + 1;
+                            map[i] = j;
+                        }
+                    }
+                }
+            }
+
+            int max = 1;
+            int start = 0;
+            for (int i = 0; i < n; i++) {
+                if (dp[i] > max) {
+                    max = dp[i];
+                    start = i;
+                }
+            }
+
+            List<string> ls = [words[start]];
+            while (map[start] != -1) {
+                start = map[start];
+                ls.Add(words[start]);
+            }
+
+            ls.Reverse();
+            return ls;
+
+            bool IsValid(string s1, string s2) {
+                if (s1.Length != s2.Length) {
+                    return false;
+                }
+
+                int cnt = 0;
+                for (int i = 0; i < s1.Length; i++) {
+                    if (s1[i] != s2[i]) {
+                        cnt++;
+                    }
+                }
+
+                return cnt == 1;
+            }
+        }
+
+        public static string ClearStars(string s) {
+            int n = s.Length;
+            int[] pos = new int[n];
+            PriorityQueue<int, CharacterWithIndex> pq = new PriorityQueue<int, CharacterWithIndex>();
+            for (int i = 0; i < n; i++) {
+                if (s[i] != '*') {
+                    pq.Enqueue(i, new(i, s[i]));
+                    pos[i] = 1;
+                } else {
+                    var index = pq.Dequeue();
+                    pos[index] = 0;
+                }
+            }
+
+            StringBuilder sb = new();
+            for (int i = 0; i < n; i++) {
+                if (pos[i] == 1) {
+                    sb.Append(s[i]);
+                }
+            }
+
+            return sb.ToString();
+        }
+
+        public struct CharacterWithIndex(int index, char character) : IComparable<CharacterWithIndex> {
+            public int Index = index;
+            public char Character { get; set; } = character;
+
+            public int CompareTo(CharacterWithIndex other) {
+                if (this.Character < other.Character) {
+                    return -1;
+                }
+                if (this.Character > other.Character) {
+                    return 1;
+                }
+                if (this.Index == other.Index) {
+                    return 0;
+                }
+                return this.Index > other.Index ? -1 : 1;
+            }
+        }
 
     }
 }
