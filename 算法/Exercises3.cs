@@ -3446,5 +3446,25 @@ namespace Algorithm {
             }
         }
 
+        public static int UniqueXorTriplets(int[] nums) {
+            HashSet<int> set = [];
+            int n = nums.Length;
+            for (int i = 0; i < n; i++) {
+                for (int j = i; j < n; j++) {
+                    set.Add(nums[i] ^ nums[j]);
+                }
+            }
+
+            HashSet<int> resSet = [];
+
+            for (int i = 0; i < n; i++) {
+                foreach (var num in set) {
+                    resSet.Add(nums[i] ^ num);
+                }
+            }
+
+            return resSet.Count();
+        }
+
     }
 }
