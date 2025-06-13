@@ -3466,5 +3466,37 @@ namespace Algorithm {
             return resSet.Count();
         }
 
+        public static GraphNode CloneGraph(GraphNode node) {
+            Queue<GraphNode> que = [];
+            Dictionary<GraphNode, GraphNode> map = [];
+            HashSet<GraphNode> vis = [];
+            que.Enqueue(node);
+            while (que.Count > 0) {
+                var popNode = que.Dequeue();
+                if (!vis.Add(popNode)) {
+                    continue;
+                }
+                GraphNode n;
+                if (!map.ContainsKey(popNode)) {
+                    n = map[popNode] = new(popNode.val);
+                } else {
+                    n = map[popNode];
+                }
+
+                foreach (var element in popNode.neighbors) {
+                    if (map.ContainsKey(element)) {
+                        n.neighbors.Add(map[element]);
+                    } else {
+                        GraphNode next = new(element.val);
+                        map[element] = next;
+                        n.neighbors.Add(next);
+
+                        que.Enqueue(element);
+                    }
+
+                }
+            }
+            return map[node];
+        }
     }
 }
